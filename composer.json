@@ -1,0 +1,38 @@
+{
+    "name": "qliro/module-qliroone",
+    "type": "magento2-module",
+    "description": "QliroOne checkout",
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Andreas Wickberg",
+            "email": "andreas.wickberg@vaimo.com"
+        },
+        {
+            "name": "Kjell Holmqvist",
+            "email": "kjell.holmqvist@vaimo.com"
+        }
+    ],
+    "require": {
+        "ext-json": "*",
+        "magento/framework": ">=100.0",
+        "guzzlehttp/guzzle": ">=6.0"
+    },
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Qliro\\QliroOne\\": ""
+        }
+    },
+    "extra": {
+        "vaimo-module-category": "Payment"
+    },
+    "repositories": [
+        {
+            "url": "https://repo.magento.com/",
+            "type": "composer"
+        }
+    ]
+}
