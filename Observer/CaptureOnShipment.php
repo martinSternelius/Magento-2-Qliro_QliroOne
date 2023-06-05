@@ -19,17 +19,17 @@ class CaptureOnShipment implements ObserverInterface
     /**
      * @var \Qliro\QliroOne\Model\Management
      */
-    private $management;
+    private $qliroManagement;
 
     /**
      * Inject dependencies
      *
-     * @param \Qliro\QliroOne\Model\Management $management
+     * @param \Qliro\QliroOne\Model\Management $qliroManagement
      */
     public function __construct(
-        \Qliro\QliroOne\Model\Management $management
+        \Qliro\QliroOne\Model\Management $qliroManagement
     ) {
-        $this->management = $management;
+        $this->qliroManagement = $qliroManagement;
     }
 
     /**
@@ -44,7 +44,7 @@ class CaptureOnShipment implements ObserverInterface
         $payment = $order->getPayment();
 
         if ($payment->getMethod() == QliroOne::PAYMENT_METHOD_CHECKOUT_CODE) {
-            $this->management->captureByShipment($shipment);
+            $this->qliroManagement->captureByShipment($shipment);
         }
     }
 }

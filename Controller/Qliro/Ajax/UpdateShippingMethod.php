@@ -38,7 +38,7 @@ class UpdateShippingMethod extends \Magento\Framework\App\Action\Action
     /**
      * @var \Qliro\QliroOne\Api\ManagementInterface
      */
-    private $management;
+    private $qliroManagement;
 
     /**
      * @var \Magento\Checkout\Model\Session
@@ -57,7 +57,7 @@ class UpdateShippingMethod extends \Magento\Framework\App\Action\Action
      * @param \Qliro\QliroOne\Model\Config $qliroConfig
      * @param \Qliro\QliroOne\Helper\Data $dataHelper
      * @param \Qliro\QliroOne\Model\Security\AjaxToken $ajaxToken
-     * @param \Qliro\QliroOne\Api\ManagementInterface $management
+     * @param \Qliro\QliroOne\Api\ManagementInterface $qliroManagement
      * @param \Magento\Checkout\Model\Session $checkoutSession
      * @param \Qliro\QliroOne\Model\Logger\Manager $logManager
      */
@@ -66,7 +66,7 @@ class UpdateShippingMethod extends \Magento\Framework\App\Action\Action
         Config $qliroConfig,
         Data $dataHelper,
         AjaxToken $ajaxToken,
-        ManagementInterface $management,
+        ManagementInterface $qliroManagement,
         Session $checkoutSession,
         LogManager $logManager
     ) {
@@ -74,7 +74,7 @@ class UpdateShippingMethod extends \Magento\Framework\App\Action\Action
         $this->dataHelper = $dataHelper;
         $this->ajaxToken = $ajaxToken;
         $this->qliroConfig = $qliroConfig;
-        $this->management = $management;
+        $this->qliroManagement = $qliroManagement;
         $this->checkoutSession = $checkoutSession;
         $this->logManager = $logManager;
     }
@@ -104,7 +104,6 @@ class UpdateShippingMethod extends \Magento\Framework\App\Action\Action
         $quote = $this->checkoutSession->getQuote();
         $this->logManager->setMerchantReferenceFromQuote($quote);
         $this->ajaxToken->setQuote($quote);
-        $this->management->setQuote($quote);
 
         if (!$this->ajaxToken->verifyToken($request->getParam('token'))) {
             return $this->dataHelper->sendPreparedPayload(
@@ -128,7 +127,7 @@ class UpdateShippingMethod extends \Magento\Framework\App\Action\Action
             }
             $secondaryOption = $data['secondaryOption'] ?? null;
             $shippingPrice = $data['price'] ?? null;
-            $result = $this->management->updateShippingMethod($shippingMethodCode, $secondaryOption, $shippingPrice);
+            $result = $this->qliroManagement->setQuote($quote)->updateShippingMethod($shippingMethodCode, $secondaryOption, $shippingPrice);
         } catch (\Exception $exception) {
             return $this->dataHelper->sendPreparedPayload(
                 [

@@ -25,6 +25,7 @@ class Config
     const QLIROONE_CAPTURE_ON_INVOICE = 'api/capture_on_invoice';
     const QLIROONE_NEWSLETTER_SIGNUP = 'api/newsletter_signup';
     const QLIROONE_REQUIRE_IDENTITY_VERIFICATION = 'api/require_identity_verification';
+    const QLIROONE_MINIMUM_CUSTOMER_AGE = 'api/minimum_customer_age';
 
     const QLIROONE_API_TYPE = 'qliro_api/type';
     const QLIROONE_MERCHANT_API_KEY = 'qliro_api/merchant_api_key';
@@ -245,19 +246,21 @@ class Config
     }
 
     /**
+     * @param int|null $storeId
      * @return bool
      */
-    public function shouldAskForNewsletterSignup()
+    public function shouldAskForNewsletterSignup($storeId = null)
     {
-        return (int)$this->adapter->getConfigData(self::QLIROONE_NEWSLETTER_SIGNUP);
+        return (int)$this->adapter->getConfigData(self::QLIROONE_NEWSLETTER_SIGNUP, $storeId);
     }
 
     /**
+     * @param int|null $storeId
      * @return bool
      */
-    public function requireIdentityVerification()
+    public function requireIdentityVerification($storeId = null)
     {
-        return (int)$this->adapter->getConfigData(self::QLIROONE_REQUIRE_IDENTITY_VERIFICATION);
+        return (int)$this->adapter->getConfigData(self::QLIROONE_REQUIRE_IDENTITY_VERIFICATION, $storeId);
     }
 
     /**
@@ -608,4 +611,12 @@ class Config
         return [];
     }
 
+    /**
+     * @param int|null $storeId
+     * @return bool
+     */
+    public function getMinimumCustomerAge($storeId = null)
+    {
+        return (int)$this->adapter->getConfigData(self::QLIROONE_MINIMUM_CUSTOMER_AGE, $storeId);
+    }
 }

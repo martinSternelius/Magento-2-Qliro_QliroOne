@@ -40,7 +40,7 @@ class UpdateQuote extends \Magento\Framework\App\Action\Action
     /**
      * @var \Qliro\QliroOne\Api\ManagementInterface
      */
-    private $management;
+    private $qliroManagement;
 
     /**
      * @var \Magento\Checkout\Model\Session
@@ -59,7 +59,7 @@ class UpdateQuote extends \Magento\Framework\App\Action\Action
      * @param \Qliro\QliroOne\Model\Config $qliroConfig
      * @param \Qliro\QliroOne\Helper\Data $dataHelper
      * @param \Qliro\QliroOne\Model\Security\AjaxToken $ajaxToken
-     * @param \Qliro\QliroOne\Api\ManagementInterface $management
+     * @param \Qliro\QliroOne\Api\ManagementInterface $qliroManagement
      * @param \Magento\Checkout\Model\Session $checkoutSession
      * @param \Qliro\QliroOne\Model\Logger\Manager $logManager
      */
@@ -68,7 +68,7 @@ class UpdateQuote extends \Magento\Framework\App\Action\Action
         Config $qliroConfig,
         Data $dataHelper,
         AjaxToken $ajaxToken,
-        ManagementInterface $management,
+        ManagementInterface $qliroManagement,
         Session $checkoutSession,
         Manager $logManager
     ) {
@@ -76,7 +76,7 @@ class UpdateQuote extends \Magento\Framework\App\Action\Action
         $this->dataHelper = $dataHelper;
         $this->ajaxToken = $ajaxToken;
         $this->qliroConfig = $qliroConfig;
-        $this->management = $management;
+        $this->qliroManagement = $qliroManagement;
         $this->checkoutSession = $checkoutSession;
         $this->logManager = $logManager;
     }
@@ -104,7 +104,6 @@ class UpdateQuote extends \Magento\Framework\App\Action\Action
         $quote = $this->checkoutSession->getQuote();
         $this->logManager->setMerchantReferenceFromQuote($quote);
         $this->ajaxToken->setQuote($quote);
-        $this->management->setQuote($quote);
 
         if (!$this->ajaxToken->verifyToken($request->getParam('token'))) {
             return $this->dataHelper->sendPreparedPayload(
@@ -118,7 +117,7 @@ class UpdateQuote extends \Magento\Framework\App\Action\Action
         $this->dataHelper->readPreparedPayload($request, 'AJAX:UPDATE_QUOTE');
 
         try {
-            $this->management->getQliroOrder();
+            $this->qliroManagement->setQuote($quote)->getQliroOrder();
         } catch (TerminalException $exception) {
             return $this->dataHelper->sendPreparedPayload(
                 ['error' => (string)__('Cannot fetch Qliro One order.')],

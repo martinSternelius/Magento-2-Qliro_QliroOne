@@ -6,6 +6,7 @@
 
 namespace Qliro\QliroOne\Model\QliroOrder\Builder;
 
+use Magento\Catalog\Model\Product\Type;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Quote\Api\Data\CartInterface;
 use Qliro\QliroOne\Api\Data\QliroOrderUpdateRequestInterfaceFactory;
@@ -125,6 +126,11 @@ class UpdateRequestBuilder
         /** @var \Qliro\QliroOne\Api\Data\QliroOrderUpdateRequestInterface $qliroOrderUpdateRequest */
         $qliroOrderUpdateRequest = $this->updateRequestFactory->create();
         $qliroOrderUpdateRequest->setRequireIdentityVerification($this->qliroConfig->requireIdentityVerification());
+        foreach ($this->quote->getItems() as $item) {
+            if ($item->getProductType() == Type::TYPE_VIRTUAL && !$item->getParentItemId()) {
+                $qliroOrderUpdateRequest->setRequireIdentityVerification(1);
+            }
+        }
 
         return $qliroOrderUpdateRequest;
     }

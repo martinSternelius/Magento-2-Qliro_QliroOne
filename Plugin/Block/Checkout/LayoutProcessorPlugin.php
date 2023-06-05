@@ -8,11 +8,6 @@ namespace Qliro\QliroOne\Plugin\Block\Checkout;
 
 use Magento\Checkout\Block\Checkout\LayoutProcessor;
 use Magento\Checkout\Model\Session;
-use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Framework\App\State;
-use Magento\Framework\Exception\LocalizedException;
-use Magento\Framework\Message\ManagerInterface;
-use Magento\Store\Model\StoreManagerInterface;
 use Qliro\QliroOne\Api\ManagementInterface;
 
 /**
@@ -20,31 +15,6 @@ use Qliro\QliroOne\Api\ManagementInterface;
  */
 class LayoutProcessorPlugin
 {
-    /**
-     * @var \Magento\Store\Api\Data\StoreInterface
-     */
-    private $store;
-
-    /**
-     * @var \Magento\Customer\Api\Data\CustomerInterface
-     */
-    private $customer;
-
-    /**
-     * @var ManagerInterface
-     */
-    private $manager;
-
-    /**
-     * @var State
-     */
-    private $appState;
-
-    /**
-     * @var ScopeConfigInterface
-     */
-    private $config;
-
     /**
      * @var \Magento\Quote\Model\Quote
      */
@@ -59,26 +29,13 @@ class LayoutProcessorPlugin
      * Inject dependencies
      *
      * @param Session $session
-     * @param ManagerInterface $manager
-     * @param State $appState
-     * @param StoreManagerInterface $storeManager
-     * @param ScopeConfigInterface $config
      * @param \Qliro\QliroOne\Api\ManagementInterface $qliroManagement
      */
     public function __construct(
         Session $session,
-        ManagerInterface $manager,
-        State $appState,
-        StoreManagerInterface $storeManager,
-        ScopeConfigInterface $config,
         ManagementInterface $qliroManagement
     ) {
         $this->quote = $session->getQuote();
-        $this->customer = $this->quote->getCustomer();
-        $this->manager = $manager;
-        $this->appState = $appState;
-        $this->config = $config;
-        $this->store = $storeManager->getStore();
         $this->qliroManagement = $qliroManagement;
     }
 

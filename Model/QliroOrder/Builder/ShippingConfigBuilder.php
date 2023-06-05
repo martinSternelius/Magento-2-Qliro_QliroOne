@@ -86,6 +86,9 @@ class ShippingConfigBuilder
         if (!$this->qliroConfig->isUnifaunEnabled($this->quote->getStoreId())) {
             return null;
         }
+        if ($this->quote->isVirtual()) {
+            return null;
+        }
 
         /** @var \Qliro\QliroOne\Api\Data\QliroOrderShippingConfigInterface $container */
         $container = $this->shippingConfigFactory->create();

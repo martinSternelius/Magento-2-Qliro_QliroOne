@@ -101,22 +101,9 @@ class OrderPlacer
         switch ($this->getCheckoutMethod($quote)) {
             case Onepage::METHOD_GUEST:
                 $this->prepareGuestQuote($quote);
-                break;
-            default:
-                $this->prepareCustomerQuote($quote);
-                break;
-        }
-        $this->quoteRepository->save($quote);
-
-        // Mask is only used for guest quotes, otherwise use normal quote id.
-        $quoteIdMask = $this->quoteIdMaskFactory->create()->load($quote->getId(),'quote_id');
-        $maskedCartId = $quoteIdMask->getMaskedId();
-        if (!$maskedCartId) {
-            $maskedCartId = $quote->getId();
-        }
-
-        switch ($this->getCheckoutMethod($quote)) {
-            case Onepage::METHOD_GUEST:
+                $quote->save(); // quoteRepository->save does stupid things...
+                $quoteIdMask = $this->quoteIdMaskFactory->create()->load($quote->getId(),'quote_id');
+                $maskedCartId = $quoteIdMask->getMaskedId();
                 $orderId = $this->guestPaymentInformationManagement->savePaymentInformationAndPlaceOrder(
                     $maskedCartId,
                     $quote->getCustomerEmail(),
@@ -124,8 +111,10 @@ class OrderPlacer
                 );
                 break;
             default:
+                $this->prepareCustomerQuote($quote);
+                $quote->save(); // quoteRepository->save does stupid things...
                 $orderId = $this->paymentInformationManagement->savePaymentInformationAndPlaceOrder(
-                    $maskedCartId,
+                    $quote->getId(),
                     $quote->getPayment()
                 );
                 break;

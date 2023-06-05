@@ -1,4 +1,6 @@
-# Qliro One Checkout for Magento 2.2
+# Qliro One Checkout for Magento 2
+
+(verified in Magento 2.2.3 and 2.3.4)
 
 The module is a fully functional implementation of a custom checkout that uses Qliro One functionality through its API.
 
@@ -9,7 +11,7 @@ within the code of the module.
 ## System configuration options
 
 As Qliro One Checkout is designed as a custom payment method, all configuration options are located in admin panel,
-under **STORES > Settings > Configuration > SALES > Payment Methods > QliroOne Checkout**.
+under **STORES > Settings > Configuration > SALES > Payment Methods > Qliro One Checkout**.
 
 - **Enabled** — must be set to "Yes" for specific website, to turn on Qliro One Checkout functionality.
   Note that Qliro One checkout replaces the standard Magento One Page Checkout for that website, they cannot be
@@ -19,6 +21,19 @@ under **STORES > Settings > Configuration > SALES > Payment Methods > QliroOne C
 - **Debug Mode** — a website-specific flag that indicates debugging mode. In debugging mode, the logging is very
   detailed, but debug mode must only be used for troubleshooting or during development, otherwise website will be
   easily overflown with extensive logged information.
+- **Eager Checkout Refreshes** - If enabled, the lock and unlock of the Qliro One checkout is skipped. It also skips 
+  the refresh of checkout when an update is made in the Iframe. Enabling this is not encouraged! 
+
+### Merchant Configuration Settings
+
+All settings here are website-specific.
+
+- **API type** — specifies a type of API. Two are supported, Sandbox and Production.
+- **Merchant API Key** — specifies merchant'specific API Key.
+- **Merchant API Secret** — specifies merchant'specific API secret. this option is stored encrypted.
+- **Preset Shipping Address** — if set to "Yes", Qliro One checkout will use a fictional shipping address based on
+  the current store postal code to create Qliro One order. Otherwise, the order will be created without any
+  shipping address.
 
 ### General Module Settings
 
@@ -29,22 +44,16 @@ All settings here are website-specific.
 - **Logging Level** — a level of logging records that are being stored in the log, may be used to reduce versatility
   of the logging as required.
 - **New Order Status** — a status that is used for marking newly placed Magento orders.
+- **Payment from Applicable Countries** — Magento standard countries setting, can limit which countries that can pay
 - **Trigger capture when shipment is created** — makes Magento trigger capturing money on shipment creation.
 - **Triger capture when invoice is created** — makes Magento trigger capturing money on invoice creation.
 - **Allow Newsletter Signup** — if set to "Yes", makes Qliro One checkout display a corresponding checkbox in the
   checkout IFRAME.
-- **Require Identity Verification** — if set to "Yes", makes Qliro One checkout perform identity verification.
-
-### Merchant Configuration Settings
-
-All settings here are website-specific.
-
-- **API type** — specifies a type of API. Two are supported, Sandbox and Production.
-- **Merchant API Key** — specifies merchant'specific API Key.
-- **Merchant API Secret** — specifies merchant'specific API secret. this option is stored encrypted.
-- **Preset Shipping Address** — if set to "Yes", Qliro One checkout will use a fictional shipping address based on
-  the current store postal code to create QliroOne order. Otherwise, the order will be created without any
-  shipping address.
+- **Require Identity Verification** — if set to "Yes", makes Qliro One checkout perform identity verification. Even if 
+  this flag is set to No, it will set this flag if a Virtual product is in the cart. Virtual products can be anything 
+  from gift cards to vouchers and various downloadable content.
+- **Minimum Customer Age** - Write the minimum age a person shopping on the site must be. If you enter anything in here
+  it becomes mandatory for the customer to identify his age.
 
 ### CSS Styling Input Fields
 
@@ -75,6 +84,16 @@ All settings here are website-specific.
 - **URI Prefix for Callbacks** — a base URI for callbacks that allows debugging Qliro One remote callback requests
   locally, through tunneling.
 
+### Nshift Integration 
+
+- **Enabled** — enables the integration to Nshift (formerly known as unifaun). Before you can use this, you will need 
+  to have it enabled in your Qliro One account 
+- **Nshift Checkout ID** — the checkout id provided to you
+- **Parameters** — a way to configure additional parameters. Pushing add adds a new line with three columns. Tag is the 
+  tag name added, the function is one of the three user defined values or a plain user defined one. Last column is the
+  value sent for that tag. For more information, see the comment in the setting.
+- If Nshift is enabled and only virtual products are added to cart, the Nshift integration is not sent to Qliro, which
+  means it will not requrire the customer to choose a freight option.
 
 ## Events
 
@@ -159,3 +178,18 @@ reference of the container to `null`.
 Obviously, no special plugin entry points are provided for the original module, but developers can use standard Magento 2
 plugin mechanism to plug into any public method in any class instantiated using DI, as specified in
 https://devdocs.magento.com/guides/v2.2/extension-dev-guide/plugins.html.
+
+
+### Database tables and Logs
+
+**qliroone_link** - The table that stores the Qliro One reference with Magento Quote. It contains more details as well,
+    such as status and last known comment regarding that order.
+
+**qliroone_log** - a detailed log of everything that takes place in the code. All logs are linked with the Qliro One
+    reference id. 
+
+**qliroone_om_status** - contains the history of all notifications received from Qliro One, plus some additional status 
+    updates
+
+**qliroone_order_lock** - during certain events and functions, we use this table as a semaphore lock to allow or 
+    disallow certain concurrent functions.

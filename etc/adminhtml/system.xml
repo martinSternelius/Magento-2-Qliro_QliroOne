@@ -74,20 +74,25 @@
                         <comment>This will also auto create invoice if capture was successful</comment>
                     </field>
 
-                    <field id="capture_on_invoice" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                    <field id="capture_on_invoice" translate="label" type="select" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
                         <label>Trigger capture when invoice is created</label>
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                         <comment>This will only occur if invoice is created before shipment</comment>
                     </field>
 
-                    <field id="newsletter_signup" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                    <field id="newsletter_signup" translate="label" type="select" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
                         <label>Allow Newsletter Signup</label>
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     </field>
 
-                    <field id="require_identity_verification" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                    <field id="require_identity_verification" translate="label" type="select" sortOrder="130" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
                         <label>Require Identity Verification</label>
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    </field>
+
+                    <field id="minimum_customer_age" translate="label" type="text" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Minimum Customer Age</label>
+                        <validate>validate-number validate-zero-or-greater</validate>
                     </field>
                 </group>
 
@@ -222,13 +227,6 @@
                         <label>Enabled</label>
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                         <comment>If you active this, your Qliro account must also have it activated</comment>
-                    </field>
-
-                    <field id="checkout_id" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                        <label>Nshift Checkout ID</label>
-                        <depends>
-                            <field id="enable">1</field>
-                        </depends>
                     </field>
 
                     <field id="checkout_id" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">

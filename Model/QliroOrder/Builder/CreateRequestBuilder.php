@@ -6,6 +6,7 @@
 
 namespace Qliro\QliroOne\Model\QliroOrder\Builder;
 
+use Magento\Catalog\Model\Product\Type;
 use Magento\Customer\Model\Session;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Event\ManagerInterface;
@@ -301,9 +302,16 @@ class CreateRequestBuilder
         $createRequest->setCallToActionHoverColor($this->qliroConfig->getStylingHoverColor());
         $createRequest->setCornerRadius($this->qliroConfig->getStylingRadius());
         $createRequest->setButtonCornerRadius($this->qliroConfig->getStylingButtonCurnerRadius());
-        $createRequest->setMinimumCustomerAge(null);
+        $createRequest->setMinimumCustomerAge(
+            $this->qliroConfig->getMinimumCustomerAge() > 0 ? $this->qliroConfig->getMinimumCustomerAge() : null
+        );
         $createRequest->setAskForNewsletterSignup($this->qliroConfig->shouldAskForNewsletterSignup());
         $createRequest->setRequireIdentityVerification($this->qliroConfig->requireIdentityVerification());
+        foreach ($this->quote->getItems() as $item) {
+            if ($item->getProductType() == Type::TYPE_VIRTUAL && !$item->getParentItemId()) {
+                $createRequest->setRequireIdentityVerification(1);
+            }
+        }
 
         return $createRequest;
     }

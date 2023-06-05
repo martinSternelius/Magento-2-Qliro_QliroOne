@@ -42,7 +42,7 @@ class PollPending extends \Magento\Framework\App\Action\Action
     /**
      * @var \Qliro\QliroOne\Api\ManagementInterface
      */
-    private $management;
+    private $qliroManagement;
 
     /**
      * @var \Qliro\QliroOne\Model\Logger\Manager
@@ -65,7 +65,7 @@ class PollPending extends \Magento\Framework\App\Action\Action
      * @param \Qliro\QliroOne\Model\Config $qliroConfig
      * @param \Qliro\QliroOne\Helper\Data $dataHelper
      * @param \Qliro\QliroOne\Model\Security\AjaxToken $ajaxToken
-     * @param \Qliro\QliroOne\Api\ManagementInterface $management
+     * @param \Qliro\QliroOne\Api\ManagementInterface $qliroManagement
      * @param \Qliro\QliroOne\Model\Quote\Agent $quoteAgent
      * @param \Qliro\QliroOne\Model\Logger\Manager $logManager
      * @param Session $successSession
@@ -75,7 +75,7 @@ class PollPending extends \Magento\Framework\App\Action\Action
         Config $qliroConfig,
         Data $dataHelper,
         AjaxToken $ajaxToken,
-        ManagementInterface $management,
+        ManagementInterface $qliroManagement,
         Agent $quoteAgent,
         Manager $logManager,
         Session $successSession
@@ -84,7 +84,7 @@ class PollPending extends \Magento\Framework\App\Action\Action
         $this->dataHelper = $dataHelper;
         $this->ajaxToken = $ajaxToken;
         $this->qliroConfig = $qliroConfig;
-        $this->management = $management;
+        $this->qliroManagement = $qliroManagement;
         $this->logManager = $logManager;
         $this->quoteAgent = $quoteAgent;
         $this->successSession = $successSession;
@@ -115,7 +115,6 @@ class PollPending extends \Magento\Framework\App\Action\Action
         $quote = $this->quoteAgent->fetchRelevantQuote();
         $this->logManager->setMerchantReferenceFromQuote($quote);
         $this->ajaxToken->setQuote($quote);
-        $this->management->setQuote($quote);
 
         if (!$quote) {
             return $this->dataHelper->sendPreparedPayload(
@@ -144,8 +143,8 @@ class PollPending extends \Magento\Framework\App\Action\Action
         $htmlSnippet = null;
 
         try {
-            $order = $this->management->pollPlaceOrder();
-            $htmlSnippet = $this->management->getHtmlSnippet();
+            $order = $this->qliroManagement->setQuote($quote)->pollPlaceOrder();
+            $htmlSnippet = $this->qliroManagement->getHtmlSnippet();
             $this->successSession->save($htmlSnippet, $order);
         } catch (TerminalException $exception) {
             $previousException = $exception->getPrevious();

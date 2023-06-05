@@ -7,7 +7,6 @@
 namespace Qliro\QliroOne\Model;
 
 use Magento\Framework\Locale\Resolver;
-use Magento\Store\Model\StoreManagerInterface;
 use Qliro\QliroOne\Api\LanguageMapperInterface;
 
 /**
@@ -26,11 +25,6 @@ class LanguageMapper implements LanguageMapperInterface
     ];
 
     /**
-     * @var \Magento\Store\Model\StoreManagerInterface
-     */
-    private $storeManager;
-
-    /**
      * @var \Magento\Framework\Locale\Resolver
      */
     private $localeResolver;
@@ -38,14 +32,11 @@ class LanguageMapper implements LanguageMapperInterface
     /**
      * Inject dependencies
      *
-     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \Magento\Framework\Locale\Resolver $localeResolver
      */
     public function __construct(
-        StoreManagerInterface $storeManager,
         Resolver $localeResolver
     ) {
-        $this->storeManager = $storeManager;
         $this->localeResolver = $localeResolver;
     }
 

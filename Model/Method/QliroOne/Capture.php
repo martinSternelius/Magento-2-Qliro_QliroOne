@@ -17,7 +17,7 @@ class Capture implements CommandInterface
     /**
      * @var \Qliro\QliroOne\Model\Management
      */
-    private $management;
+    private $qliroManagement;
 
     /**
      * @var \Qliro\QliroOne\Model\Config
@@ -27,14 +27,14 @@ class Capture implements CommandInterface
     /**
      * Inject dependencies
      *
-     * @param \Qliro\QliroOne\Model\Management $management
+     * @param \Qliro\QliroOne\Model\Management $qliroManagement
      * @param \Qliro\QliroOne\Model\Config $qliroConfig
      */
     public function __construct(
-        \Qliro\QliroOne\Model\Management $management,
+        \Qliro\QliroOne\Model\Management $qliroManagement,
         \Qliro\QliroOne\Model\Config $qliroConfig
     ) {
-        $this->management = $management;
+        $this->qliroManagement = $qliroManagement;
         $this->qliroConfig = $qliroConfig;
     }
 
@@ -57,7 +57,7 @@ class Capture implements CommandInterface
             /** @var \Magento\Sales\Model\Order $order */
             $order = $payment->getOrder();
             if ($this->qliroConfig->shouldCaptureOnInvoice($order ? $order->getStoreId() : null)) {
-                $this->management->captureByInvoice($payment, $amount);
+                $this->qliroManagement->captureByInvoice($payment, $amount);
             }
         } catch (\Exception $exception) {
             throw new \Magento\Framework\Exception\LocalizedException(

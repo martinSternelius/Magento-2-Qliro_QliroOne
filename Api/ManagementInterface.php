@@ -20,14 +20,6 @@ use Qliro\QliroOne\Api\Data\ValidateOrderNotificationInterface;
 interface ManagementInterface
 {
     /**
-     * Set quote to the Management class
-     *
-     * @param \Magento\Quote\Model\Quote $quote
-     * @return $this
-     */
-    public function setQuote($quote);
-
-    /**
      * Fetch a QliroOne order and return it as a container
      *
      * @param bool $allowRecreate if the qliro order is stale, create a new one
@@ -86,27 +78,6 @@ interface ManagementInterface
      * @return \Qliro\QliroOne\Api\Data\CheckoutStatusResponseInterface
      */
     public function checkoutStatus(CheckoutStatusInterface $checkoutStatus);
-
-    /**
-     * Create payment transaction, which will hold and handle the Order Management features.
-     * This saves payment and transaction, possibly also the order.
-     *
-     * @param \Magento\Sales\Model\Order $order
-     * @param QliroOrderInterface $qliroOrder
-     * @param string $state
-     * @return void
-     * @throws \Exception
-     */
-    public function createPaymentTransaction($order, $qliroOrder, $state = Order::STATE_PENDING_PAYMENT);
-
-    /**
-     * Update qliro order with information in quote
-     *
-     * @param int $orderId
-     * @param bool $force
-     * @return void
-     */
-    public function updateQliroOrder($orderId, $force = false);
 
     /**
      * Update customer with data from QliroOne frontend callback

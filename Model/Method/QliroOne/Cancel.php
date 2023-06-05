@@ -31,23 +31,23 @@ class Cancel implements CommandInterface
     /**
      * @var \Qliro\QliroOne\Api\ManagementInterface
      */
-    private $management;
+    private $qliroManagement;
 
     /**
      * Inject dependencies
      *
      * @param \Qliro\QliroOne\Api\LinkRepositoryInterface $linkRepository
      * @param \Qliro\QliroOne\Model\Logger\Manager $logManager
-     * @param \Qliro\QliroOne\Api\ManagementInterface $management
+     * @param \Qliro\QliroOne\Api\ManagementInterface $qliroManagement
      */
     public function __construct(
         LinkRepositoryInterface $linkRepository,
         LogManager $logManager,
-        ManagementInterface $management
+        ManagementInterface $qliroManagement
     ) {
         $this->linkRepository = $linkRepository;
         $this->logManager = $logManager;
-        $this->management = $management;
+        $this->qliroManagement = $qliroManagement;
     }
 
     /**
@@ -80,7 +80,7 @@ class Cancel implements CommandInterface
             $link->setMessage(sprintf('Order #%s marked as canceled', $orderId));
             $this->linkRepository->save($link);
 
-            $this->management->cancelQliroOrder($link->getQliroOrderId());
+            $this->qliroManagement->cancelQliroOrder($link->getQliroOrderId());
             $this->logManager->info(
                 'Canceled order, requested a QliroOne order cancellation',
                 [
