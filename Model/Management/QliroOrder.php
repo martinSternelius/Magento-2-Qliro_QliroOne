@@ -360,7 +360,7 @@ class QliroOrder extends AbstractManagement
         } catch (LinkInactiveException $exception) {
             throw new TerminalException(
                 'Couldn\'t request to cancel QliroOne order with inactive link.',
-                null,
+                0,
                 $exception
             );
         } catch (\Exception $exception) {

@@ -59,7 +59,7 @@ class AppliedRulesHandler implements OrderItemHandlerInterface
      */
     public function handle($orderItems, $quote)
     {
-        $arrayAppliedRules = sprintf('DSC_%s', \str_replace(',', '_', $quote->getAppliedRuleIds()));
+        $arrayAppliedRules = sprintf('DSC_%s', $quote->getAppliedRuleIds()?\str_replace(',', '_', $quote->getAppliedRuleIds()):'');
         $discountAmount = $quote->getSubtotalWithDiscount() - $quote->getSubtotal();
         $formattedAmount = $this->qliroHelper->formatPrice($discountAmount);
 

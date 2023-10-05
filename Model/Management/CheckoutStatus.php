@@ -140,8 +140,8 @@ class CheckoutStatus extends AbstractManagement
 
                     $curTimeStamp = time();
                     $tooEarly = false;
-                    $placedTimeStamp = strtotime($link->getPlacedAt());
-                    $updTimeStamp = strtotime($link->getUpdatedAt());
+                    $placedTimeStamp = strtotime($link->getPlacedAt()??'');
+                    $updTimeStamp = strtotime($link->getUpdatedAt()??'');
                     if ($placedTimeStamp && $curTimeStamp < $placedTimeStamp + self::QLIRO_POLL_VS_CHECKOUT_STATUS_TIMEOUT) {
                         $tooEarly = true;
                     }

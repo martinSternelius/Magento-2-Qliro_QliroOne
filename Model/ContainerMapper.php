@@ -119,8 +119,10 @@ class ContainerMapper
                 } elseif ($setterType) {
                     // If value is an associative array, wrap it into container
                     $subClassName = rtrim($setterType, '[]');
-                    $subContainer = $this->fromArray($value, $subClassName);
-                    $value = $subContainer;
+                    if(is_array($value) && !empty($value)){
+                        $subContainer = $this->fromArray($value, $subClassName);
+                        $value = $subContainer;
+                    }
                 }
 
                 $container->$setterName($value);
@@ -184,7 +186,12 @@ class ContainerMapper
                 try {
                     $method = new \ReflectionMethod($container, $setterName);
                     $params = $method->getParameters();
-                    $setterClass = $params[0]->getClass();
+                    $getClassMethod = str_replace('set', 'get', $classMethod);
+                    $setterClass = is_array($container->$getClassMethod()) ? $container->$getClassMethod()[0] : null;
+                    if ($setterClass) {
+                        $setterClass = new \ReflectionClass($setterClass);
+                    }
+                    //$setterClass = $params[0]->getClass();//deprecated
                     $setterType = $setterClass ? $setterClass->getName() : null;
 
                     if (!$setterType) {
