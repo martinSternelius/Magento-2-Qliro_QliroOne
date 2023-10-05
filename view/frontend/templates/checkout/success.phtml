@@ -1,0 +1,21 @@
+<?php
+/**
+ * Copyright © Qliro AB. All rights reserved.
+ * See LICENSE.txt for license details.
+ */
+
+/** @var \Qliro\QliroOne\Block\Checkout\Success $block */
+?>
+
+<div class="success-wrapper">
+    <div class="qliroone-checkout-success">
+        <div class="js-success-header">
+            <?php echo $block->escapeHtml(__('Order has successfully been placed. Order ID: #%1', $block->getIncrementId())); ?>
+        </div>
+
+        <div id="qliro-html-snippet">
+            <?= $block->getHtmlSnippet() ?>
+        </div>
+    </div>
+</div>
+
