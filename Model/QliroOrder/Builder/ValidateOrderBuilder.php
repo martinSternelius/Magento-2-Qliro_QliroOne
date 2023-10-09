@@ -120,12 +120,13 @@ class ValidateOrderBuilder
         }
 
         if (!$this->quote->isVirtual() && !$this->quote->getShippingAddress()->getShippingMethod()) {
+            $method = $this->quote->getShippingAddress()->getShippingMethod();
             $this->quote = null;
             $this->validationRequest = null;
             $this->logValidateError(
                 'create',
                 'not a virtual order, invalid shipping method selected',
-                ['method' => $this->quote->getShippingAddress()->getShippingMethod()]
+                ['method' => $method]
             );
 
             return $container->setDeclineReason(ValidateOrderResponseInterface::REASON_SHIPPING);
