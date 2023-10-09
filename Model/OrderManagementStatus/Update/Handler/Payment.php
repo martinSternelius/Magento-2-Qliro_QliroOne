@@ -86,7 +86,7 @@ class Payment implements OrderManagementStatusUpdateHandlerInterface
                     ],
                 ]
             );
-            throw new TerminalException('Could not handle Invoice Success', null, $exception);
+            throw new TerminalException('Could not handle Invoice Success', $exception->getCode(), $exception);
         }
 
         /*

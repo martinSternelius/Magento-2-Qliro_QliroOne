@@ -247,7 +247,7 @@ class QliroOrder extends AbstractManagement
                 ]
             );
 
-            throw new TerminalException('Couldn\'t fetch the QliroOne order.', null, $exception);
+            throw new TerminalException('Couldn\'t fetch the QliroOne order.', $exception->getCode(), $exception);
         } finally {
             $this->logManager->setMark(null);
         }
@@ -360,7 +360,7 @@ class QliroOrder extends AbstractManagement
         } catch (LinkInactiveException $exception) {
             throw new TerminalException(
                 'Couldn\'t request to cancel QliroOne order with inactive link.',
-                0,
+                $exception->getCode(),
                 $exception
             );
         } catch (\Exception $exception) {
@@ -384,7 +384,7 @@ class QliroOrder extends AbstractManagement
                 ]
             );
 
-            throw new TerminalException('Couldn\'t request to cancel QliroOne order.', null, $exception);
+            throw new TerminalException('Couldn\'t request to cancel QliroOne order.', $exception->getCode(), $exception);
         } finally {
             $this->logManager->setMark(null);
         }

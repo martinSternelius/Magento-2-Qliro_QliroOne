@@ -148,7 +148,7 @@ class Shipment implements OrderManagementStatusUpdateHandlerInterface
                     ],
                 ]
             );
-            throw new TerminalException('Could not handle Shipment Success', null, $exception);
+            throw new TerminalException('Could not handle Shipment Success', $exception->getCode(), $exception);
         }
     }
 
