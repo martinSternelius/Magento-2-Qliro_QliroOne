@@ -27,7 +27,12 @@ define([
         return (
             $.ajax({
                 url: config.updateQuoteUrl + '?quote_id=' + quote.getQuoteId() + '&token=' + config.securityToken,
-                method: 'POST'
+                method: 'POST',
+                success: function(response) {
+                    if(!quote.shippingMethod()) {
+                        location.reload();
+                    }
+                }
             })
         )
     }
@@ -39,7 +44,12 @@ define([
             method: 'POST',
             data: JSON.stringify(data),
             processData: false,
-            contentType: 'application/json'
+            contentType: 'application/json',
+            success: function(response) {
+                if(!quote.shippingMethod()) {
+                    sendUpdateQuote()
+                }
+            }
         });
     }
 
