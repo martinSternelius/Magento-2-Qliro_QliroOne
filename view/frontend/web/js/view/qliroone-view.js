@@ -65,6 +65,9 @@ define([
             this.discountApplied.subscribe(function() {
                 qliro.updateCart();
             });
+            quote.shippingAddress.subscribe(function(address) {
+                qliro.updateCart();
+            });
         },
 
         initializeQliro: function() {

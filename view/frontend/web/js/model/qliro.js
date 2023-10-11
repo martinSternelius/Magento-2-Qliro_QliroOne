@@ -13,7 +13,8 @@ define([
     'Magento_Checkout/js/model/cart/totals-processor/default',
     'Magento_Checkout/js/model/cart/cache',
     'Magento_Customer/js/customer-data',
-    'mage/translate'
+    'mage/translate',
+    'Magento_Checkout/js/model/checkout-data-resolver',
 ], function(
     $,
     config,
@@ -21,18 +22,14 @@ define([
     totalsProcessor,
     cartCache,
     customerData,
-    __
+    __,
+    checkoutDataResolver
 ) {
     function sendUpdateQuote() {
         return (
             $.ajax({
                 url: config.updateQuoteUrl + '?quote_id=' + quote.getQuoteId() + '&token=' + config.securityToken,
-                method: 'POST',
-                success: function(response) {
-                    if(!quote.shippingMethod()) {
-                        location.reload();
-                    }
-                }
+                method: 'POST'
             })
         )
     }
@@ -44,12 +41,7 @@ define([
             method: 'POST',
             data: JSON.stringify(data),
             processData: false,
-            contentType: 'application/json',
-            success: function(response) {
-                if(!quote.shippingMethod()) {
-                    sendUpdateQuote()
-                }
-            }
+            contentType: 'application/json'
         });
     }
 
@@ -133,6 +125,9 @@ define([
             sendAjaxAsJson(config.updateCustomerUrl, customer).then(
                 function(data) {
                     qliroSuccessDebug('onCustomerInfoChanged', data);
+                    if(!quote.shippingAddress().postcode) {
+                        checkoutDataResolver.resolveShippingAddress();
+                    }
                 },
                 function(response) {
                     var data = response.responseJSON || {};
