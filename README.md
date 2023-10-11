@@ -1,6 +1,6 @@
 # Qliro One Checkout for Magento 2
 
-(verified in Magento 2.2.3 and 2.3.4)
+(Versions starting from 1.4.0 verified in Magento 2.4.6)
 
 The module is a fully functional implementation of a custom checkout that uses Qliro One functionality through its API.
 
