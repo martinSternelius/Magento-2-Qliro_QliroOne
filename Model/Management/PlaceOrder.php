@@ -220,7 +220,7 @@ class PlaceOrder extends AbstractManagement
                     );
                     $this->lock->unlock($qliroOrderId);
 
-                    throw new TerminalException('Order placement failed', null, $exception);
+                    throw new TerminalException('Order placement failed', $exception->getCode(), $exception);
                 }
             } else {
                 $order = $this->orderRepository->get($orderId);
@@ -236,7 +236,7 @@ class PlaceOrder extends AbstractManagement
                     ],
                 ]
             );
-            throw new TerminalException('Failed to link current session with Qliro One order', null, $exception);
+            throw new TerminalException('Failed to link current session with Qliro One order', $exception->getCode(), $exception);
         } catch (\Exception $exception) {
             $this->logManager->critical(
                 $exception,
@@ -249,7 +249,7 @@ class PlaceOrder extends AbstractManagement
                 ]
             );
 
-            throw new TerminalException('Something went wrong during order placement polling', null, $exception);
+            throw new TerminalException('Something went wrong during order placement polling', $exception->getCode(), $exception);
         }
 
         return $order;
