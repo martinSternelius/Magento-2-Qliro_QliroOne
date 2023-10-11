@@ -46,9 +46,9 @@ class CustomerConverter
      */
     public function convert($qliroCustomer, Quote $quote)
     {
-        if ($qliroCustomer) {
+        if ($qliroCustomer && $qliroCustomer->getEmail() !== null) {
             $customer = $quote->getCustomer();
-            $qliroAddress = $qliroCustomer->getAddress();
+            $qliroAddress = $qliroCustomer->getAddress() ?? null;
 
             $customerData = [
                 'email' => $qliroCustomer->getEmail(),

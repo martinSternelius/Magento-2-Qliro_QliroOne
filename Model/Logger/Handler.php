@@ -15,6 +15,7 @@ use Qliro\QliroOne\Model\Config;
 use Monolog\Formatter\FormatterInterface;
 use Qliro\QliroOne\Model\ResourceModel\LogRecord;
 use Qliro\QliroOne\Api\Data\LogRecordInterface;
+use Qliro\QliroOne\Model\Logger\ConnectionProvider;
 
 /**
  * Logger DB handler class
@@ -56,7 +57,7 @@ class Handler extends AbstractProcessingHandler
      * @param array $record
      * @return bool
      */
-    public function isHandling(array $record)
+    public function isHandling(array $record): bool
     {
         return $record['level'] >= $this->getLevel();
 
@@ -67,7 +68,7 @@ class Handler extends AbstractProcessingHandler
      *
      * @return int
      */
-    public function getLevel()
+    public function getLevel(): int
     {
         $this->level = Logger::toMonologLevel($this->config->getLoggingLevel());
 
@@ -78,7 +79,7 @@ class Handler extends AbstractProcessingHandler
      * @param array $record
      * @throws \DomainException
      */
-    protected function write(array $record)
+    protected function write(array $record): void
     {
         $context = $record['context'];
         $record = $record['formatted'];
