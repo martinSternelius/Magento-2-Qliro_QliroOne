@@ -75,7 +75,7 @@ class OrderItemsConverter
                     break;
 
                 case QliroOrderItemInterface::TYPE_SHIPPING:
-                    $shippingCode = $orderItem->getMerchantReference();
+                    // Unhandled
                     break;
 
                 case QliroOrderItemInterface::TYPE_DISCOUNT:
