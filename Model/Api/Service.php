@@ -138,7 +138,7 @@ class Service implements \Qliro\QliroOne\Api\ApiServiceInterface
             if (!is_scalar($value)) {
                 continue;
             }
-            $modifiedEndpoint = str_replace('{' . $key . '}', $value, $endpoint);
+            $modifiedEndpoint = str_replace('{' . $key . '}', $value, (string)$endpoint);
 
             if ($modifiedEndpoint !== $endpoint) {
                 unset($params[$key]);

@@ -69,7 +69,7 @@ class CustomerAddressBuilder
         $qliroOrderCustomerAddress->setLastName($this->address->getLastname());
         $qliroOrderCustomerAddress->setCompanyName($this->address->getCompany());
         $qliroOrderCustomerAddress->setStreet($streetAddress);
-        $qliroOrderCustomerAddress->setPostalCode(str_replace(' ', '', $this->address->getPostcode()));
+        $qliroOrderCustomerAddress->setPostalCode(str_replace(' ', '', (string)$this->address->getPostcode()));
         $qliroOrderCustomerAddress->setCity($this->address->getCity());
 
         $this->address = null;
