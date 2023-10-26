@@ -53,7 +53,7 @@ class AppliedRulesHandler implements OrderItemHandlerInterface
         if (!$order->getFirstCaptureFlag()) {
             return $orderItems;
         }
-        $arrayAppliedRules = sprintf('DSC_%s', \str_replace(',', '_', $order->getAppliedRuleIds()));
+        $arrayAppliedRules = sprintf('DSC_%s', \str_replace(',', '_', (string)$order->getAppliedRuleIds()));
         // @todo might not be the exact same amount as quote calculation: $quote->getSubtotalWithDiscount() - $quote->getSubtotal();
         $discountAmount = (float)$order->getDiscountAmount();
 
