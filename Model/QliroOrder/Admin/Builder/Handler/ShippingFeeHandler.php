@@ -16,6 +16,8 @@ use Qliro\QliroOne\Helper\Data as QliroHelper;
  */
 class ShippingFeeHandler implements OrderItemHandlerInterface
 {
+    const MERCHANT_REFERENCE_CODE_FIELD = 'qliro_shipping_merchant_ref';
+
     /**
      * @var \Qliro\QliroOne\Api\Data\QliroOrderItemInterfaceFactory
      */
@@ -54,7 +56,10 @@ class ShippingFeeHandler implements OrderItemHandlerInterface
         if (!$order->getFirstCaptureFlag()) {
             return $orderItems;
         }
-        $merchantReference = $order->getShippingMethod();
+
+        $paymentAdditionalInfo = $order->getPayment()->getAdditionalInformation();
+        $merchantReference = $paymentAdditionalInfo[self::MERCHANT_REFERENCE_CODE_FIELD] ?? false;
+
         $inclTax = (float)$order->getShippingAmount() + $order->getShippingTaxAmount();
         $exclTax = (float)$order->getShippingAmount();
 
