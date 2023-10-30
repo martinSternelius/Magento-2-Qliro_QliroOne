@@ -187,7 +187,10 @@ class ContainerMapper
                     $method = new \ReflectionMethod($container, $setterName);
                     $params = $method->getParameters();
                     $getClassMethod = str_replace('set', 'get', $classMethod);
-                    $setterClass = is_array($container->$getClassMethod()) ? $container->$getClassMethod()[0] : null;
+                    $setterClass =
+                        $this->checkIfArrayWithNumericKeys($container->$getClassMethod())
+                            ? $container->$getClassMethod()[0]
+                            : null;
                     if ($setterClass) {
                         $setterClass = new \ReflectionClass($setterClass);
                     }

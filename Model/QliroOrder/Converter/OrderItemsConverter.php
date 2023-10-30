@@ -13,6 +13,7 @@ use Qliro\QliroOne\Model\Product\Type\QuoteSourceProvider;
 use Qliro\QliroOne\Model\Product\Type\TypePoolHandler;
 use Qliro\QliroOne\Model\Fee;
 use Qliro\QliroOne\Model\QliroOrder\Admin\Builder\Handler\InvoiceFeeHandler;
+use Qliro\QliroOne\Model\QliroOrder\Admin\Builder\Handler\ShippingFeeHandler;
 
 /**
  * QliroOne Order Items Converter class
@@ -68,6 +69,7 @@ class OrderItemsConverter
             $shippingCode = $quote->getShippingAddress()->getShippingMethod();
         }
 
+        $shippingMerchantRef = '';
         foreach ($qliroOrderItems as $orderItem) {
             switch ($orderItem->getType()) {
                 case QliroOrderItemInterface::TYPE_PRODUCT:
@@ -75,7 +77,7 @@ class OrderItemsConverter
                     break;
 
                 case QliroOrderItemInterface::TYPE_SHIPPING:
-                    $shippingCode = $orderItem->getMerchantReference();
+                    $shippingMerchantRef = $orderItem->getMerchantReference();
                     break;
 
                 case QliroOrderItemInterface::TYPE_DISCOUNT:
@@ -97,7 +99,7 @@ class OrderItemsConverter
         }
 
         if (!$quote->isVirtual() && $shippingCode) {
-            $this->applyShippingMethod($shippingCode, $quote);
+            $this->applyShippingMethod($shippingCode, $quote, $shippingMerchantRef);
         }
 
         $this->fee->setQlirooneFeeInclTax($quote, $feeAmount);
@@ -108,7 +110,7 @@ class OrderItemsConverter
      * @param \Magento\Quote\Model\Quote $quote
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    private function applyShippingMethod($code, Quote $quote)
+    private function applyShippingMethod($code, Quote $quote, string $shippingMerchantRef = '')
     {
         if (empty($code)) {
             throw new LocalizedException(__('Invalid shipping method, empty code.'));
@@ -137,5 +139,12 @@ class OrderItemsConverter
         }
 
         $quote->getShippingAddress()->setShippingMethod($code);
+
+        if (!!$shippingMerchantRef) {
+            $quote->getPayment()->setAdditionalInformation(
+                ShippingFeeHandler::MERCHANT_REFERENCE_CODE_FIELD,
+                $shippingMerchantRef
+            );
+        }
     }
 }

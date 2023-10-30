@@ -326,7 +326,7 @@ class CreateRequest implements QliroOrderCreateRequestInterface
     public function setMerchantCheckoutStatusPushUrl($merchantCheckoutStatusPushUrl)
     {
         if (self::TEST_LOCAL_URL && $merchantCheckoutStatusPushUrl) {
-            $merchantCheckoutStatusPushUrl = str_replace('http:', 'https:', $merchantCheckoutStatusPushUrl);
+            $merchantCheckoutStatusPushUrl = $this->httpToHttps((string)$merchantCheckoutStatusPushUrl);
         }
         $this->merchantCheckoutStatusPushUrl = $merchantCheckoutStatusPushUrl;
 
@@ -350,7 +350,7 @@ class CreateRequest implements QliroOrderCreateRequestInterface
     public function setMerchantOrderManagementStatusPushUrl($merchantOrderManagementStatusPushUrl)
     {
         if (self::TEST_LOCAL_URL && $merchantOrderManagementStatusPushUrl) {
-            $merchantOrderManagementStatusPushUrl = str_replace('http:', 'https:', $merchantOrderManagementStatusPushUrl);
+            $merchantOrderManagementStatusPushUrl = $this->httpToHttps((string)$merchantOrderManagementStatusPushUrl);
         }
         $this->merchantOrderManagementStatusPushUrl = $merchantOrderManagementStatusPushUrl;
 
@@ -374,7 +374,7 @@ class CreateRequest implements QliroOrderCreateRequestInterface
     public function setMerchantOrderValidationUrl($merchantOrderValidationUrl)
     {
         if (self::TEST_LOCAL_URL && $merchantOrderValidationUrl) {
-            $merchantOrderValidationUrl = str_replace('http:', 'https:', $merchantOrderValidationUrl);
+            $merchantOrderValidationUrl = $this->httpToHttps((string)$merchantOrderValidationUrl);
         }
         $this->merchantOrderValidationUrl = $merchantOrderValidationUrl;
 
@@ -398,7 +398,9 @@ class CreateRequest implements QliroOrderCreateRequestInterface
     public function setMerchantOrderAvailableShippingMethodsUrl($merchantOrderAvailableShippingMethodsUrl)
     {
         if (self::TEST_LOCAL_URL && $merchantOrderAvailableShippingMethodsUrl) {
-            $merchantOrderAvailableShippingMethodsUrl = str_replace('http:', 'https:', $merchantOrderAvailableShippingMethodsUrl);
+            $merchantOrderAvailableShippingMethodsUrl = $this->httpToHttps(
+                (string)$merchantOrderAvailableShippingMethodsUrl
+            );
         }
         $this->merchantOrderAvailableShippingMethodsUrl = $merchantOrderAvailableShippingMethodsUrl;
 
@@ -422,7 +424,7 @@ class CreateRequest implements QliroOrderCreateRequestInterface
     public function setMerchantIntegrityPolicyUrl($merchantIntegrityPolicyUrl)
     {
         if (self::TEST_LOCAL_URL && $merchantIntegrityPolicyUrl) {
-            $merchantIntegrityPolicyUrl = str_replace('http:', 'https:', $merchantIntegrityPolicyUrl);
+            $merchantIntegrityPolicyUrl = $this->httpToHttps((string)$merchantIntegrityPolicyUrl);
         }
         $this->merchantIntegrityPolicyUrl = $merchantIntegrityPolicyUrl;
 
@@ -679,5 +681,16 @@ class CreateRequest implements QliroOrderCreateRequestInterface
         $this->requireIdentityVerification = $requireIdentityVerification;
 
         return $this;
+    }
+
+    /**
+     * Replace http with https in URL
+     *
+     * @param string $url
+     * @return string
+     */
+    private function httpToHttps(string $url): string
+    {
+        return str_replace('http:', 'https:', (string)$url);
     }
 }

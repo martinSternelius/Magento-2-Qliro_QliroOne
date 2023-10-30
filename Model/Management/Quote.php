@@ -26,6 +26,8 @@ use Qliro\QliroOne\Model\QliroOrder\Builder\CreateRequestBuilder;
 use Qliro\QliroOne\Model\QliroOrder\Builder\UpdateRequestBuilder;
 use Qliro\QliroOne\Model\QliroOrder\Converter\CustomerConverter;
 use Magento\Framework\Serialize\Serializer\Json;
+use Magento\Quote\Model\Quote as ModelQuote;
+use Magento\Quote\Model\QuoteRepository\LoadHandler;
 use Qliro\QliroOne\Helper\Data as Helper;
 
 /**
@@ -109,6 +111,11 @@ class Quote extends AbstractManagement
     private $eventManager;
 
     /**
+     * @var LoadHandler
+     */
+    private LoadHandler $loadHandler;
+
+    /**
      * Inject dependencies
      * @param Config $qliroConfig
      * @param MerchantInterface $merchantApi
@@ -124,7 +131,8 @@ class Quote extends AbstractManagement
      * @param Json $json
      * @param Fee $fee
      * @param Helper $helper
-     * @param ManagerInterface $eventManager
+     * @param ManagerInterface $eventManager,
+     * @param LoadHandler $loadHandler
      */
     public function __construct(
         Config $qliroConfig,
@@ -141,7 +149,8 @@ class Quote extends AbstractManagement
         Json $json,
         Fee $fee,
         Helper $helper,
-        ManagerInterface $eventManager
+        ManagerInterface $eventManager,
+        LoadHandler $loadHandler
     ) {
         $this->qliroConfig = $qliroConfig;
         $this->merchantApi = $merchantApi;
@@ -158,6 +167,7 @@ class Quote extends AbstractManagement
         $this->fee = $fee;
         $this->helper = $helper;
         $this->eventManager = $eventManager;
+        $this->loadHandler = $loadHandler;
     }
 
     /**
@@ -291,6 +301,7 @@ class Quote extends AbstractManagement
                 try {
                     /** @var \Magento\Quote\Model\Quote $quote */
                     $quote = $this->quoteRepository->get($quoteId);
+                    $this->completeQuoteLoading($quote);
 
                     $hash = $this->generateUpdateHash($quote);
 
@@ -534,5 +545,24 @@ class Quote extends AbstractManagement
         if (!preg_match(HashResolverInterface::VALIDATE_MERCHANT_REFERENCE, $hash)) {
             throw new \DomainException(sprintf('Merchant reference \'%s\' will not be accepted by Qliro', $hash));
         }
+    }
+
+    /**
+     * If quote was not active when loaded, it will be missing some necessary data such as Items.
+     * In this case, we complete the loading here using the load handler.
+     *
+     * @param ModelQuote $quote
+     * @return void
+     */
+    private function completeQuoteLoading(ModelQuote $quote): void
+    {
+        if ($quote->getIsActive()) {
+            return;
+        }
+
+        $origActiveValue = $quote->getIsActive();
+        $quote->setIsActive(true);
+        $this->loadHandler->load($quote);
+        $quote->setIsActive($origActiveValue);
     }
 }

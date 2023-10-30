@@ -219,7 +219,7 @@ class CreateRequestBuilder
                         $storeInfo->getData('street_line2')
                     ),
                     'city' => $storeInfo->getData('city'),
-                    'postcode' => str_replace(' ', '', $storeInfo->getData('postcode')),
+                    'postcode' => str_replace(' ', '', (string)$storeInfo->getData('postcode')),
                     'region_id' => $storeInfo->getData('region_id'),
                     'country_id' => $storeInfo->getData('country_id'),
                     'region' => $storeInfo->getData('region'),
