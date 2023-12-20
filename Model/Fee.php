@@ -19,6 +19,7 @@ use Magento\Tax\Api\Data\QuoteDetailsItemInterfaceFactory;
 use Magento\Tax\Api\Data\TaxClassKeyInterfaceFactory;
 use Magento\Tax\Api\TaxCalculationInterface;
 use Magento\Tax\Api\Data\TaxClassKeyInterface;
+use Magento\Framework\DataObjectFactory;
 
 class Fee
 {
@@ -93,6 +94,11 @@ class Fee
     private $customerGroupRepository;
 
     /**
+     * @var DataObjectFactory
+     */
+    private $dataObjectFactory;
+
+    /**
      * Fee constructor.
      *
      * @param Config $config
@@ -108,6 +114,7 @@ class Fee
      * @param AddressInterfaceFactory $addressFactory
      * @param RegionInterfaceFactory $regionFactory
      * @param GroupRepositoryInterface $customerGroupRepository
+     * @param DataObjectFactory $dataObjectFactory
      */
     public function __construct(
         Config $config,
@@ -122,7 +129,8 @@ class Fee
         TaxCalculationInterface $taxCalculation,
         AddressInterfaceFactory $addressFactory,
         RegionInterfaceFactory $regionFactory,
-        GroupRepositoryInterface $customerGroupRepository
+        GroupRepositoryInterface $customerGroupRepository,
+        DataObjectFactory $dataObjectFactory
     ) {
         $this->config = $config;
         $this->checkoutSession = $checkoutSession;
@@ -137,6 +145,7 @@ class Fee
         $this->addressFactory = $addressFactory;
         $this->regionFactory = $regionFactory;
         $this->customerGroupRepository = $customerGroupRepository;
+        $this->dataObjectFactory = $dataObjectFactory;
     }
 
     /**
@@ -214,14 +223,13 @@ class Fee
      *
      * @param \Magento\Quote\Model\Quote $quote
      * @param float $amount
-     * @return array|null
+     * @return array
      */
     public function getFeeArray($quote, $amount)
     {
         $feeSetup = $this->getFeeSetup($quote->getStoreId());
-        if (!$amount) {
-// Ideally, returning null should block the fee from appearing, but it doesn't
-//            return null;
+        if (!$amount || empty($feeSetup)) {
+            return [];
         }
         $result = [
             'code' => Config::TOTALS_FEE_CODE,
@@ -236,26 +244,27 @@ class Fee
      *
      * @param int $storeId
      * @param float $amount
-     * @return \Magento\Framework\DataObject|null
+     * @return \Magento\Framework\DataObject
      */
     public function getFeeObject($storeId, $amount)
     {
         $feeSetup = $this->getFeeSetup($storeId);
-        if (!$amount) {
-            return null;
+        $feeObject = $this->dataObjectFactory->create();
+        if (!$amount || empty($feeSetup)) {
+            return $feeObject;
         }
         if ($feeSetup) {
             $title = __($feeSetup[Config::CONFIG_FEE_TITLE]);
         } else {
             $title = __('Payment fee');
         }
-        $result = new \Magento\Framework\DataObject([
-                'code' => Config::TOTALS_FEE_CODE,
-                'strong' => false,
-                'value' => $amount,
-                'label' => $title,
+        $feeObject->setData([
+            'code' => Config::TOTALS_FEE_CODE,
+            'strong' => false,
+            'value' => $amount,
+            'label' => $title,
         ]);
-        return $result;
+        return $feeObject;
     }
 
     /**
@@ -267,7 +276,7 @@ class Fee
     public function getFeeSetup($storeId)
     {
         if (!$this->config->isActive($storeId)) {
-            return null;
+            return [];
         }
         if (!$this->methodsWithFee) {
             $title = $this->config->getFeeMerchantReference();
@@ -289,6 +298,9 @@ class Fee
      */
     public function applyDisplayFlagsToFeeArray($quote, $feeCalc)
     {
+        if (empty($feeCalc)) {
+            return [];
+        }
         if ($feeCalc[Config::CONFIG_FEE_AMOUNT]) {
             $price = $feeCalc[Config::CONFIG_FEE_AMOUNT];
             $feeCalc[Config::CONFIG_FEE_AMOUNT] = $this->getTaxPrice($quote, $price);
