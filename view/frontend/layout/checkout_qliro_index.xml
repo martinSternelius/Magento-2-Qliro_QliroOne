@@ -94,6 +94,11 @@
                                                 </item>
                                             </item>
                                         </item>
+                                        <item name="qliro-country-selector" xsi:type="array">
+                                            <item name="component" xsi:type="string">Qliro_QliroOne/js/view/country-selector</item>
+                                            <item name="displayArea" xsi:type="string">qlirooneCountrySelector</item>
+                                            <item name="sortOrder" xsi:type="string">9</item>
+                                        </item>
                                         <item name="qliroone-step" xsi:type="array">
                                             <item name="component" xsi:type="string">Qliro_QliroOne/js/view/qliroone-view</item>
                                             <item name="sortOrder" xsi:type="string">10</item>

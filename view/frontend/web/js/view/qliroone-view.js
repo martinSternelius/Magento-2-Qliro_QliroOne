@@ -72,7 +72,6 @@ define([
 
         initializeQliro: function() {
             window.q1Ready = function(q1) {
-                console.log(q1); // Debugging
                 q1.onCheckoutLoaded(qliro.onCheckoutLoaded);
                 q1.onCustomerInfoChanged(qliro.onCustomerInfoChanged);
                 q1.onPaymentDeclined(qliro.onPaymentDeclined);

@@ -25,6 +25,7 @@ use Qliro\QliroOne\Model\Method\QliroOne;
 use Qliro\QliroOne\Model\QliroOrder\Builder\CreateRequestBuilder;
 use Qliro\QliroOne\Model\QliroOrder\Builder\UpdateRequestBuilder;
 use Qliro\QliroOne\Model\QliroOrder\Converter\CustomerConverter;
+use Qliro\QliroOne\Model\Management\CountrySelect;
 use Magento\Framework\Serialize\Serializer\Json;
 use Magento\Quote\Model\Quote as ModelQuote;
 use Magento\Quote\Model\QuoteRepository\LoadHandler;
@@ -115,6 +116,8 @@ class Quote extends AbstractManagement
      */
     private LoadHandler $loadHandler;
 
+    private CountrySelect $countrySelectManagement;
+
     /**
      * Inject dependencies
      * @param Config $qliroConfig
@@ -133,6 +136,7 @@ class Quote extends AbstractManagement
      * @param Helper $helper
      * @param ManagerInterface $eventManager,
      * @param LoadHandler $loadHandler
+     * @param CountrySelect $countrySelectManagement
      */
     public function __construct(
         Config $qliroConfig,
@@ -150,7 +154,8 @@ class Quote extends AbstractManagement
         Fee $fee,
         Helper $helper,
         ManagerInterface $eventManager,
-        LoadHandler $loadHandler
+        LoadHandler $loadHandler,
+        CountrySelect $countrySelectManagement
     ) {
         $this->qliroConfig = $qliroConfig;
         $this->merchantApi = $merchantApi;
@@ -168,6 +173,7 @@ class Quote extends AbstractManagement
         $this->helper = $helper;
         $this->eventManager = $eventManager;
         $this->loadHandler = $loadHandler;
+        $this->countrySelectManagement = $countrySelectManagement;
     }
 
     /**
@@ -248,6 +254,8 @@ class Quote extends AbstractManagement
             $link->setIsActive(true);
             $link->setQuoteId($quoteId);
         }
+
+        $this->handleCountrySelect($link);
 
         if ($link->getQliroOrderId()) {
             $this->update($link->getQliroOrderId());
@@ -564,5 +572,25 @@ class Quote extends AbstractManagement
         $quote->setIsActive(true);
         $this->loadHandler->load($quote);
         $quote->setIsActive($origActiveValue);
+    }
+
+    /**
+     * Handles country selector logic
+     * If country selector is enabled, and customer has changed country,
+     * we reset the Qliro order id so a new will be created
+     *
+     * @param LinkInterface $link
+     * @return void
+     */
+    private function handleCountrySelect(LinkInterface $link): void
+    {
+        if (!$this->countrySelectManagement->isEnabled()) {
+            return;
+        }
+
+        if ($this->countrySelectManagement->countryHasChanged()) {
+            $link->setQliroOrderId(null);
+            $this->linkRepository->save($link);
+        }
     }
 }

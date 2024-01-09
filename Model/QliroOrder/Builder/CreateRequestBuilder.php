@@ -19,6 +19,7 @@ use Qliro\QliroOne\Api\GeoIpResolverInterface;
 use Qliro\QliroOne\Api\LanguageMapperInterface;
 use Qliro\QliroOne\Model\Config;
 use Qliro\QliroOne\Model\Security\CallbackToken;
+use Qliro\QliroOne\Model\Management\CountrySelect;
 use \Magento\Framework\Url\QueryParamsResolverInterface;
 use Magento\Store\Model\Information;
 
@@ -118,6 +119,11 @@ class CreateRequestBuilder
     private $shippingConfigBuilder;
 
     /**
+     * @var CountrySelect
+     */
+    private CountrySelect $countrySelectManagement;
+
+    /**
      * Inject dependencies
      *
      * @param \Qliro\QliroOne\Api\Data\QliroOrderCreateRequestInterfaceFactory $createRequestFactory
@@ -152,7 +158,8 @@ class CreateRequestBuilder
         ShippingMethodsBuilder $shippingMethodsBuilder,
         ShippingConfigBuilder $shippingConfigBuilder,
         Information $information,
-        ManagerInterface $eventManager
+        ManagerInterface $eventManager,
+        CountrySelect $countrySelectManagement
     ) {
         $this->createRequestFactory = $createRequestFactory;
         $this->languageMapper = $languageMapper;
@@ -170,6 +177,7 @@ class CreateRequestBuilder
         $this->information = $information;
         $this->eventManager = $eventManager;
         $this->shippingConfigBuilder = $shippingConfigBuilder;
+        $this->countrySelectManagement = $countrySelectManagement;
     }
 
     /**
@@ -317,13 +325,21 @@ class CreateRequestBuilder
     }
 
     /**
-     * Get a country code, either from default config setting, or from a GeoIP resolver
+     * Get a country code, either from:
+     * - default config setting
+     * - selected by customer in Country Selector
+     * - GeoIP resolver
      *
      * @return string
      */
     private function getCountry()
     {
         $countryCode = null;
+        $countrySelectorEnabled = $this->countrySelectManagement->isEnabled();
+        $countrySelectorValue = $this->countrySelectManagement->getSelectedCountry();
+        if ($countrySelectorEnabled && !!$countrySelectorValue) {
+            return $countrySelectorValue;
+        }
 
         if ($this->qliroConfig->isUseGeoIp()) {
             $countryCode = $this->geoIpResolver->getCountryCode($this->quote->getRemoteIp());
