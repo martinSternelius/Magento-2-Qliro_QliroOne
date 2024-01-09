@@ -116,7 +116,8 @@ class Fee extends AbstractTotal
      */
     public function fetch(Quote $quote, Total $total)
     {
-        return $this->fee->getFeeArray($quote, $total->getQlirooneFee());
+        $feeArray = $this->fee->getFeeArray($quote, $total->getQlirooneFee());
+        return isset($feeArray['value']) ? $feeArray : [];
     }
 
     /**

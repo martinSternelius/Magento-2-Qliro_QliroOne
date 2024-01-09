@@ -69,9 +69,7 @@ class CheckoutConfigProvider implements ConfigProviderInterface
      */
     public function getConfig()
     {
-        $feeSetup = $this->fee->getFeeSetup($this->quote->getStoreId());
-        $feeSetup = $this->fee->applyDisplayFlagsToFeeArray($this->quote, $feeSetup);
-        return [
+        $config = [
             'qliro' => [
                 'enabled' => $this->qliroConfig->isActive(),
                 'isDebug' => $this->qliroConfig->isDebugMode(),
@@ -84,11 +82,19 @@ class CheckoutConfigProvider implements ConfigProviderInterface
                 'updateShippingPriceUrl' => $this->getUrl('checkout/qliro_ajax/updateShippingPrice'),
                 'updatePaymentMethodUrl' => $this->getUrl('checkout/qliro_ajax/updatePaymentMethod'),
                 'pollPendingUrl' => $this->getUrl('checkout/qliro_ajax/pollPending'),
-                'qliroone_fee' => [
-                    'fee_setup' => $feeSetup,
-                ],
+                'qliroone_fee' => []
             ],
         ];
+
+        $feeSetup = $this->fee->getFeeSetup($this->quote->getStoreId());
+        if (empty($feeSetup)) {
+            return $config;
+        }
+
+        $config['qliro']['qliroone_fee']['fee_setup'] =
+            $this->fee->applyDisplayFlagsToFeeArray($this->quote, $feeSetup);
+
+        return $config;
     }
 
     /**
