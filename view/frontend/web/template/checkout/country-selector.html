@@ -1,0 +1,16 @@
+<form data-role="qliro-one-country-selector" class="opc-payment-additional">
+    <div class="field country-selector">
+        <label class="label" for="qliro-one-country-selector">
+            <span data-bind="i18n: 'Country'"></span>
+        </label>
+        <div class="control">
+            <select id="qliro-one-country-selector" name="qliro-one-country-selector" data-bind="
+                options: availableCountries,
+                value: selectedCountry,
+                optionsText: 'label',
+                optionsValue: 'value',
+                event: {change: onCountryChange}
+            "></select>
+        </div>
+    </div>
+</form>

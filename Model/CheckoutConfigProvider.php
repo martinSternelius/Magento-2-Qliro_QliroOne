@@ -86,6 +86,15 @@ class CheckoutConfigProvider implements ConfigProviderInterface
             ],
         ];
 
+        // If country selector is enabled, add available countries to config
+        if ($this->qliroConfig->isUseCountrySelector()) {
+            $config['qliro']['countrySelector'] = [
+               'updateCountryUrl' => $this->getUrl('checkout/qliro_ajax/updateCountry'),
+               'availableCountries' => $this->qliroConfig->getAvailableCountries(),
+               'selectedCountry' => $this->getSelectedCountry()
+            ];
+        }
+
         $feeSetup = $this->fee->getFeeSetup($this->quote->getStoreId());
         if (empty($feeSetup)) {
             return $config;
@@ -108,5 +117,23 @@ class CheckoutConfigProvider implements ConfigProviderInterface
         $store = $this->storeManager->getStore();
 
         return $store->getUrl($path);
+    }
+
+    /**
+     * @return string
+     */
+    private function getSelectedCountry(): string
+    {
+        $quote = $this->quote;
+        $mainAddress = $quote->getShippingAddress();
+        if ($quote->isVirtual()) {
+            $mainAddress = $quote->getBillingAddress();
+        }
+
+        $addressCountry = $mainAddress->getCountryId();
+        if (!$addressCountry) {
+            return $this->qliroConfig->getDefaultCountry();
+        }
+        return $addressCountry;
     }
 }

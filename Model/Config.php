@@ -8,6 +8,8 @@ namespace Qliro\QliroOne\Model;
 use Magento\Framework\Serialize\Serializer\Json;
 use Magento\Payment\Model\Method\Adapter;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Directory\Helper\Data as DirectoryHelper;
+use Magento\Directory\Model\ResourceModel\Country\CollectionFactory as CountryCollectionFactory;
 
 class Config
 {
@@ -16,6 +18,7 @@ class Config
     const QLIROONE_DEBUG = 'debug';
     const QLIROONE_EAGER_CHECKOUT_REFRESH = 'eager_checkout_refresh';
 
+    const QLIROONE_COUNTRY_SELECTOR = 'api/country_selector';
     const QLIROONE_GEOIP = 'api/geoip';
     const QLIROONE_LOGGING_LEVEL = 'api/logging';
     const QLIROONE_ORDER_STATUS = 'api/order_status';
@@ -107,20 +110,36 @@ class Config
     private $json;
 
     /**
+     * @var DirectoryHelper
+     */
+    private DirectoryHelper $directoryHelper;
+
+    /**
+     * @var CountryCollectionFactory
+     */
+    private CountryCollectionFactory $countryCollectionFactory;
+
+    /**
      * Inject dependencies
      *
      * @param \Magento\Payment\Model\Method\Adapter $adapter
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $config
      * @param Json $json
+     * @param DirectoryHelper $directoryHelper
+     * @param CountryCollectionFactory $countryCollectionFactory
      */
     public function __construct(
         Adapter $adapter,
         ScopeConfigInterface $config,
-        Json $json
+        Json $json,
+        DirectoryHelper $directoryHelper,
+        CountryCollectionFactory $countryCollectionFactory
     ) {
         $this->adapter = $adapter;
         $this->config = $config;
         $this->json = $json;
+        $this->directoryHelper = $directoryHelper;
+        $this->countryCollectionFactory = $countryCollectionFactory;
     }
 
     /**
@@ -131,6 +150,16 @@ class Config
     public function isActive()
     {
         return (bool)$this->adapter->getConfigData(self::QLIROONE_ACTIVE);
+    }
+
+    /**
+     * Check if country selector should be used
+     *
+     * @return boolean
+     */
+    public function isUseCountrySelector(): bool
+    {
+        return (bool)$this->adapter->getConfigData(self::QLIROONE_COUNTRY_SELECTOR);
     }
 
     /**
@@ -618,5 +647,36 @@ class Config
     public function getMinimumCustomerAge($storeId = null)
     {
         return (int)$this->adapter->getConfigData(self::QLIROONE_MINIMUM_CUSTOMER_AGE, $storeId);
+    }
+
+    /**
+     * Gets available countries depending on current config:
+     * - if "allow specific" is enabled, returns the list of countries from "specific countries" config
+     * - otherwise, returns general list of allowed countries
+     *
+     * @param string $storeId
+     * @return array – Option format: ['value' => 'SE', 'label' => 'Sweden']
+     */
+    public function getAvailableCountries($storeId = null): array
+    {
+        if (!$this->getAllowSpecific()) {
+            return $this->directoryHelper->getCountryCollection($storeId)->toOptionArray(false);
+        }
+        $countryCollection = $this->countryCollectionFactory->create();
+        $countryIds = explode(',', $this->getSpecificCountries());
+
+        $countryCollection->addFieldToFilter('country_id', ['in' => $countryIds]);
+        return $countryCollection->toOptionArray(false);
+    }
+
+    /**
+     * Get default country
+     *
+     * @param int|null $storeId
+     * @return string
+     */
+    public function getDefaultCountry($storeId = null): string
+    {
+        return $this->directoryHelper->getDefaultCountry($storeId);
     }
 }

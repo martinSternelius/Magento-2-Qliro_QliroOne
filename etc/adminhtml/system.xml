@@ -37,10 +37,18 @@
 
                     <label>General Module Settings</label>
 
+                    <field id="country_selector" translate="label" type="select" sortOrder="9" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Country Selector</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    </field>
+
                     <field id="geoip" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
                         <label>Geo IP</label>
                         <comment>GeoIP mode will only detect the country if corresponding extension is installed on the server. Otherwise the country selected as website default country in System Configuration will always be used.</comment>
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <depends>
+                            <field id="country_selector">0</field>
+                        </depends>
                     </field>
 
                     <field id="logging" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
@@ -58,7 +66,7 @@
                         <source_model>Magento\Shipping\Model\Config\Source\Allspecificcountries</source_model>
                     </field>
 
-                    <field id="shipping_countries" translate="label" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                    <field id="shipping_countries" translate="label" type="multiselect" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
                         <label>Payment from Specific Countries</label>
 
                         <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
@@ -66,6 +74,7 @@
                         <depends>
                             <field id="allowspecific">1</field>
                         </depends>
+                        <can_be_empty>1</can_be_empty>
                     </field>
 
                     <field id="capture_on_shipment" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
