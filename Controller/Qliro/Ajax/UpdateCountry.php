@@ -112,7 +112,7 @@ class UpdateCountry implements HttpPostActionInterface
 
         $data = $this->dataHelper->readPreparedPayload($this->request, 'AJAX:UPDATE_COUNTRY');
         $countryId = $data['countryId'] ?? '';
-        $this->countrySelect->setSelectedCountry($countryId);
+        $this->countrySelect->registerCountryChangeInput($countryId);
 
         return $this->dataHelper->sendPreparedPayload(
             ['status' => 'OK'],
