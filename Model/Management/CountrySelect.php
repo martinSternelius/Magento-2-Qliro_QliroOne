@@ -30,23 +30,31 @@ class CountrySelect
     }
 
     /**
-     * Set selected country code
+     * Register country selector input, with signifier for if country is changed
      *
      * @param string $countryId
      */
-    public function setSelectedCountry(string $countryId): void
+    public function registerCountryChangeInput(string $countryId): void
     {
-        $this->checkoutSession->setSelectedCountry($countryId);
+        if (!$countryId) {
+            return;
+        }
+
+        $selectedCountry = $this->checkoutSession->getSelectedCountry() ?? '';
+        $this->checkoutSession->setSelectedCountry($selectedCountry . '|' . $countryId);
     }
 
     /**
-     * Get selected country code
+     * Gets last country change input, not including changes
      *
      * @return string
      */
     public function getSelectedCountry(): string
     {
-        return $this->checkoutSession->getSelectedCountry() ?? '';
+        $selectedCountryInfo = $this->checkoutSession->getSelectedCountry() ?? '';
+        $infoParts = explode('|', $selectedCountryInfo);
+        $lastInput = array_pop($infoParts);
+        return $lastInput;
     }
 
     /**
@@ -56,11 +64,30 @@ class CountrySelect
      */
     public function countryHasChanged(): bool
     {
-        $quote = $this->checkoutSession->getQuote();
-        $mainAddress = $quote->getShippingAddress();
-        if ($quote->isVirtual()) {
-            $mainAddress = $quote->getBillingAddress();
+        $selectedCountry = $this->checkoutSession->getSelectedCountry();
+        if (!$selectedCountry) {
+            return false;
         }
-        return $this->checkoutSession->getSelectedCountry() !== $mainAddress->getCountryId();
+
+        $containsChange = strpos($selectedCountry, '|') !== false;
+        if (!$containsChange) {
+            return false;
+        }
+
+        $this->registerChangedCountry();
+        return true;
+    }
+
+    /**
+     * Registers changed country by storing last input without change signifier '|'
+     *
+     * @return void
+     */
+    private function registerChangedCountry(): void
+    {
+        $selectedCountry = $this->checkoutSession->getSelectedCountry();
+        $infoParts = explode('|', $selectedCountry);
+        $lastInput = array_pop($infoParts);
+        $this->checkoutSession->setSelectedCountry($lastInput);
     }
 }

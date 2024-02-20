@@ -10,6 +10,7 @@ use Magento\Checkout\Model\ConfigProviderInterface;
 use Magento\Checkout\Model\Session;
 use Magento\Store\Model\StoreManagerInterface;
 use Qliro\QliroOne\Model\Security\AjaxToken;
+use Qliro\QliroOne\Model\Management\CountrySelect;
 
 /**
  * QliroOne Cehckout config provider class
@@ -42,6 +43,12 @@ class CheckoutConfigProvider implements ConfigProviderInterface
     private $fee;
 
     /**
+     * @var CountrySelect
+     */
+    private CountrySelect $countrySelect;
+
+
+    /**
      * Inject dependencies
      *
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
@@ -49,19 +56,22 @@ class CheckoutConfigProvider implements ConfigProviderInterface
      * @param \Magento\Checkout\Model\Session $checkoutSession
      * @param \Qliro\QliroOne\Model\Config $qliroConfig
      * @param \Qliro\QliroOne\Model\Fee $fee
+     * @param CountrySelect $countrySelect
      */
     public function __construct(
         StoreManagerInterface $storeManager,
         AjaxToken $ajaxToken,
         Session $checkoutSession,
         Config $qliroConfig,
-        \Qliro\QliroOne\Model\Fee $fee
+        \Qliro\QliroOne\Model\Fee $fee,
+        CountrySelect $countrySelect
     ) {
         $this->quote = $checkoutSession->getQuote();
         $this->storeManager = $storeManager;
         $this->ajaxToken = $ajaxToken;
         $this->qliroConfig = $qliroConfig;
         $this->fee = $fee;
+        $this->countrySelect = $countrySelect;
     }
 
     /**
@@ -124,6 +134,11 @@ class CheckoutConfigProvider implements ConfigProviderInterface
      */
     private function getSelectedCountry(): string
     {
+        $selectedCountry = $this->countrySelect->getSelectedCountry();
+        if (!!$selectedCountry) {
+            return $selectedCountry;
+        }
+
         $quote = $this->quote;
         $mainAddress = $quote->getShippingAddress();
         if ($quote->isVirtual()) {
