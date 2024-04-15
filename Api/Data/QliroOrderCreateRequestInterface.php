@@ -136,6 +136,11 @@ interface QliroOrderCreateRequestInterface extends ContainerInterface
     /**
      * @return bool
      */
+    public function getAskForNewsletterSignupChecked();
+
+    /**
+     * @return bool
+     */
     public function getRequireIdentityVerification();
 
     /**
@@ -281,6 +286,12 @@ interface QliroOrderCreateRequestInterface extends ContainerInterface
      * @return $this
      */
     public function setAskForNewsletterSignup($value);
+
+    /**
+     * @param bool $value
+     * @return $this
+     */
+    public function setAskForNewsletterSignupChecked($value);
 
     /**
      * @param bool $value

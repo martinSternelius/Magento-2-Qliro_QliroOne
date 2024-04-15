@@ -314,6 +314,7 @@ class CreateRequestBuilder
             $this->qliroConfig->getMinimumCustomerAge() > 0 ? $this->qliroConfig->getMinimumCustomerAge() : null
         );
         $createRequest->setAskForNewsletterSignup($this->qliroConfig->shouldAskForNewsletterSignup());
+        $createRequest->setAskForNewsletterSignupChecked($this->qliroConfig->askForNewsletterSignupChecked());
         $createRequest->setRequireIdentityVerification($this->qliroConfig->requireIdentityVerification());
         foreach ($this->quote->getItems() as $item) {
             if ($item->getProductType() == Type::TYPE_VIRTUAL && !$item->getParentItemId()) {
