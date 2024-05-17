@@ -48,9 +48,9 @@ class ShipmentMarkItemsAsShippedRequestBuilder
     private $logManager;
 
     /**
-     * @var \Qliro\QliroOne\Model\QliroOrder\Admin\Builder\ShipmentOrderItemsBuilder
+     * @var \Qliro\QliroOne\Model\QliroOrder\Admin\Builder\ShipmentShipmentsBuilder
      */
-    private $orderItemsBuilder;
+    private $shipmentsBuilder;
 
     /**
      * @var \Qliro\QliroOne\Model\Config
@@ -63,20 +63,20 @@ class ShipmentMarkItemsAsShippedRequestBuilder
      * @param \Qliro\QliroOne\Api\Data\AdminMarkItemsAsShippedRequestInterfaceFactory $requestFactory
      * @param \Qliro\QliroOne\Api\LinkRepositoryInterface $linkRepository
      * @param \Qliro\QliroOne\Model\Logger\Manager $logManager
-     * @param \Qliro\QliroOne\Model\QliroOrder\Admin\Builder\ShipmentOrderItemsBuilder $orderItemsBuilder
+     * @param \Qliro\QliroOne\Model\QliroOrder\Admin\Builder\ShipmentShipmentsBuilder $shipmentsBuilder
      * @param \Qliro\QliroOne\Model\Config $qliroConfig
      */
     public function __construct(
         AdminMarkItemsAsShippedRequestInterfaceFactory $requestFactory,
         LinkRepositoryInterface $linkRepository,
         LogManager $logManager,
-        ShipmentOrderItemsBuilder $orderItemsBuilder,
+        ShipmentShipmentsBuilder $shipmentsBuilder,
         Config $qliroConfig
     ) {
         $this->requestFactory = $requestFactory;
         $this->linkRepository = $linkRepository;
         $this->logManager = $logManager;
-        $this->orderItemsBuilder = $orderItemsBuilder;
+        $this->shipmentsBuilder = $shipmentsBuilder;
         $this->qliroConfig = $qliroConfig;
     }
 
@@ -129,10 +129,10 @@ class ShipmentMarkItemsAsShippedRequestBuilder
             $request->setCurrency($this->order->getOrderCurrencyCode());
             $request->setOrderId($link->getQliroOrderId());
 
-            $this->orderItemsBuilder->setShipment($this->shipment);
-            $orderItems = $this->orderItemsBuilder->create();
+            $this->shipmentsBuilder->setShipment($this->shipment);
+            $shipments = $this->shipmentsBuilder->create();
 
-            $request->setOrderItems($orderItems);
+            $request->setShipments($shipments);
 
         } catch (NoSuchEntityException $exception) {
             $this->logManager->debug(

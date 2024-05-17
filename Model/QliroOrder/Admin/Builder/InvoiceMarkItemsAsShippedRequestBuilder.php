@@ -11,6 +11,7 @@ use Qliro\QliroOne\Api\Data\AdminMarkItemsAsShippedRequestInterfaceFactory;
 use Qliro\QliroOne\Api\LinkRepositoryInterface;
 use Qliro\QliroOne\Model\Logger\Manager as LogManager;
 use Qliro\QliroOne\Model\Config;
+use Qliro\QliroOne\Model\QliroOrder\Admin\Builder\InvoiceShipmentsBuilder;
 
 /**
  * Mark Items As Shipped Request Builder class
@@ -26,11 +27,6 @@ class InvoiceMarkItemsAsShippedRequestBuilder
      * @var \Magento\Sales\Model\Order
      */
     private $order;
-
-    /**
-     * @var \Magento\Sales\Model\Order\Invoice
-     */
-    private $invoice;
 
     /**
      * @var float
@@ -53,9 +49,9 @@ class InvoiceMarkItemsAsShippedRequestBuilder
     private $logManager;
 
     /**
-     * @var \Qliro\QliroOne\Model\QliroOrder\Admin\Builder\InvoiceOrderItemsBuilder
+     * @var \Qliro\QliroOne\Model\QliroOrder\Admin\Builder\InvoiceShipmentsBuilder
      */
-    private $orderItemsBuilder;
+    private $shipmentsBuilder;
 
     /**
      * @var \Qliro\QliroOne\Model\Config
@@ -68,20 +64,20 @@ class InvoiceMarkItemsAsShippedRequestBuilder
      * @param \Qliro\QliroOne\Api\Data\AdminMarkItemsAsShippedRequestInterfaceFactory $requestFactory
      * @param \Qliro\QliroOne\Api\LinkRepositoryInterface $linkRepository
      * @param \Qliro\QliroOne\Model\Logger\Manager $logManager
-     * @param \Qliro\QliroOne\Model\QliroOrder\Admin\Builder\InvoiceOrderItemsBuilder $orderItemsBuilder
+     * @param \Qliro\QliroOne\Model\QliroOrder\Admin\Builder\InvoiceShipmentsBuilder $shipmentsBuilder
      * @param \Qliro\QliroOne\Model\Config $qliroConfig
      */
     public function __construct(
         AdminMarkItemsAsShippedRequestInterfaceFactory $requestFactory,
         LinkRepositoryInterface $linkRepository,
         LogManager $logManager,
-        InvoiceOrderItemsBuilder $orderItemsBuilder,
+        InvoiceShipmentsBuilder $shipmentsBuilder,
         Config $qliroConfig
     ) {
         $this->requestFactory = $requestFactory;
         $this->linkRepository = $linkRepository;
         $this->logManager = $logManager;
-        $this->orderItemsBuilder = $orderItemsBuilder;
+        $this->shipmentsBuilder = $shipmentsBuilder;
         $this->qliroConfig = $qliroConfig;
     }
 
@@ -94,9 +90,6 @@ class InvoiceMarkItemsAsShippedRequestBuilder
 
         /** @var \Magento\Sales\Model\Order $order */
         $this->order = $this->payment->getOrder();
-
-        /** @var  \Magento\Sales\Model\Order\Invoice $invoice */
-        $this->invoice = $this->payment->getInvoice();
     }
 
     /**
@@ -122,7 +115,6 @@ class InvoiceMarkItemsAsShippedRequestBuilder
 
         $this->payment = null;
         $this->order = null;
-        $this->invoice = null;
 
         return $request;
     }
@@ -144,10 +136,10 @@ class InvoiceMarkItemsAsShippedRequestBuilder
             $request->setCurrency($this->order->getOrderCurrencyCode());
             $request->setOrderId($link->getQliroOrderId());
 
-            $this->orderItemsBuilder->setPayment($this->payment);
-            $orderItems = $this->orderItemsBuilder->create();
+            $this->shipmentsBuilder->setPayment($this->payment);
+            $shipments = $this->shipmentsBuilder->create();
 
-            $request->setOrderItems($orderItems);
+            $request->setShipments($shipments);
 
         } catch (NoSuchEntityException $exception) {
             $this->logManager->debug(
