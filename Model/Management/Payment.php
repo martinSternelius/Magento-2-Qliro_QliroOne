@@ -67,12 +67,12 @@ class Payment extends AbstractManagement
     private $orderManagementStatusRepository;
 
     /**
-     * @var QliroOrder\Admin\Builder\InvoiceMarkItemsAsShippedRequestBuilder
+     * @var \Qliro\QliroOne\Model\QliroOrder\Admin\Builder\InvoiceMarkItemsAsShippedRequestBuilder
      */
     private $invoiceMarkItemsAsShippedRequestBuilder;
 
     /**
-     * @var QliroOrder\Admin\Builder\ShipmentMarkItemsAsShippedRequestBuilder
+     * @var \Qliro\QliroOne\Model\QliroOrder\Admin\Builder\ShipmentMarkItemsAsShippedRequestBuilder
      */
     private $shipmentMarkItemsAsShippedRequestBuilder;
 
