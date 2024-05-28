@@ -27,6 +27,7 @@ class Config
     const QLIROONE_CAPTURE_ON_SHIPMENT = 'api/capture_on_shipment';
     const QLIROONE_CAPTURE_ON_INVOICE = 'api/capture_on_invoice';
     const QLIROONE_NEWSLETTER_SIGNUP = 'api/newsletter_signup';
+    const QLIROONE_NEWSLETTER_SIGNUP_PRECHECKED = 'api/newsletter_signup_prechecked';
     const QLIROONE_REQUIRE_IDENTITY_VERIFICATION = 'api/require_identity_verification';
     const QLIROONE_MINIMUM_CUSTOMER_AGE = 'api/minimum_customer_age';
 
@@ -281,6 +282,15 @@ class Config
     public function shouldAskForNewsletterSignup($storeId = null)
     {
         return (int)$this->adapter->getConfigData(self::QLIROONE_NEWSLETTER_SIGNUP, $storeId);
+    }
+
+    /**
+     * @param int|null $storeId
+     * @return bool
+     */
+    public function askForNewsletterSignupChecked($storeId = null)
+    {
+        return !!$this->adapter->getConfigData(self::QLIROONE_NEWSLETTER_SIGNUP_PRECHECKED, $storeId);
     }
 
     /**

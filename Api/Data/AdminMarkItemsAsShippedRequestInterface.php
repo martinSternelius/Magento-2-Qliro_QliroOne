@@ -27,9 +27,9 @@ interface AdminMarkItemsAsShippedRequestInterface extends ContainerInterface
     public function getCurrency();
 
     /**
-     * @return \Qliro\QliroOne\Api\Data\QliroOrderItemInterface[]
+     * @return \Qliro\QliroOne\Api\Data\QliroShipmentInterface[]
      */
-    public function getOrderItems();
+    public function getShipments();
 
     /**
      * @return string
@@ -55,10 +55,10 @@ interface AdminMarkItemsAsShippedRequestInterface extends ContainerInterface
     public function setCurrency($value);
 
     /**
-     * @param \Qliro\QliroOne\Api\Data\QliroOrderItemInterface[] $value
-     * @return $this
+     * @param \Qliro\QliroOne\Api\Data\QliroShipmentInterface[] $value
+     * @return void
      */
-    public function setOrderItems($value);
+    public function setShipments(array $value);
 
     /**
      * @param string $value

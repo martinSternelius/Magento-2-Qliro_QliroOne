@@ -139,6 +139,11 @@ class CreateRequest implements QliroOrderCreateRequestInterface
     /**
      * @var bool
      */
+    private $askForNewsletterSignupChecked;
+
+    /**
+     * @var bool
+     */
     private $requireIdentityVerification;
 
     /**
@@ -658,6 +663,25 @@ class CreateRequest implements QliroOrderCreateRequestInterface
     public function setAskForNewsletterSignup($askForNewsletterSignup)
     {
         $this->askForNewsletterSignup = $askForNewsletterSignup;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getAskForNewsletterSignupChecked()
+    {
+        return $this->askForNewsletterSignupChecked;
+    }
+
+    /**
+     * @param bool $askForNewsletterSignup
+     * @return CreateRequest
+     */
+    public function setAskForNewsletterSignupChecked($askForNewsletterSignupChecked)
+    {
+        $this->askForNewsletterSignupChecked = $askForNewsletterSignupChecked;
 
         return $this;
     }

@@ -29,9 +29,9 @@ class MarkItemsAsShippedRequest implements AdminMarkItemsAsShippedRequestInterfa
     private $currency;
 
     /**
-     * @var \Qliro\QliroOne\Api\Data\QliroOrderItemInterface[]
+     * @var \Qliro\QliroOne\Api\Data\QliroShipmentInterface[]
      */
-    private $orderItems;
+    private $shipments;
 
     /**
      * @var string
@@ -70,6 +70,14 @@ class MarkItemsAsShippedRequest implements AdminMarkItemsAsShippedRequestInterfa
     }
 
     /**
+     * @inheritDoc
+     */
+    public function getShipments()
+    {
+        return $this->shipments;
+    }
+
+    /**
      * @param int $orderId
      * @return MarkItemsAsShippedRequest
      */
@@ -102,23 +110,11 @@ class MarkItemsAsShippedRequest implements AdminMarkItemsAsShippedRequestInterfa
     }
 
     /**
-     * Getter.
-     *
-     * @return \Qliro\QliroOne\Api\Data\QliroOrderItemInterface[]
+     * @inheritDoc
      */
-    public function getOrderItems()
+    public function setShipments(array $value)
     {
-        return $this->orderItems;
-    }
-
-    /**
-     * @param \Qliro\QliroOne\Api\Data\QliroOrderItemInterface[] $orderItems
-     * @return MarkItemsAsShippedRequest
-     */
-    public function setOrderItems($orderItems)
-    {
-        $this->orderItems = $orderItems;
-
+        $this->shipments = $value;
         return $this;
     }
 

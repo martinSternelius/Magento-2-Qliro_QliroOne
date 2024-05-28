@@ -183,6 +183,7 @@
     <preference for="Qliro\QliroOne\Api\Data\QliroOrderCreateRequestInterface" type="Qliro\QliroOne\Model\QliroOrder\CreateRequest" />
     <preference for="Qliro\QliroOne\Api\Data\QliroOrderUpdateRequestInterface" type="Qliro\QliroOne\Model\QliroOrder\UpdateRequest" />
     <preference for="Qliro\QliroOne\Api\Data\QliroOrderItemInterface" type="Qliro\QliroOne\Model\QliroOrder\Item" />
+    <preference for="Qliro\QliroOne\Api\Data\QliroShipmentInterface" type="Qliro\QliroOne\Model\QliroOrder\Shipment" />
     <preference for="Qliro\QliroOne\Api\Data\QliroOrderCustomerInterface" type="Qliro\QliroOne\Model\QliroOrder\Customer" />
     <preference for="Qliro\QliroOne\Api\Data\QliroOrderCustomerAddressInterface" type="Qliro\QliroOne\Model\QliroOrder\Address\Address" />
     <preference for="Qliro\QliroOne\Api\Data\QliroOrderInterface" type="Qliro\QliroOne\Model\QliroOrder" />

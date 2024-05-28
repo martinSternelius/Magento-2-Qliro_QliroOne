@@ -94,6 +94,12 @@
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     </field>
 
+                    <field id="newsletter_signup_prechecked" translate="label" type="select" sortOrder="125" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Newsletter Signup checked by default</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <depends><field id="newsletter_signup">1</field></depends>
+                    </field>
+
                     <field id="require_identity_verification" translate="label" type="select" sortOrder="130" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
                         <label>Require Identity Verification</label>
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>

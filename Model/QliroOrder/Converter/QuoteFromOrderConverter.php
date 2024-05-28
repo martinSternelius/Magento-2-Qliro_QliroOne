@@ -25,7 +25,7 @@ class QuoteFromOrderConverter
     private $customerConverter;
 
     /**
-     * @var \Qliro\QliroOne\Model\Newsletter\SubscriptionInterface
+     * @var \Qliro\QliroOne\Api\SubscriptionInterface
      */
     private $subscription;
 
