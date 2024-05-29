@@ -7,6 +7,7 @@
 namespace Qliro\QliroOne\Model\QliroOrder\Admin\Builder;
 
 use Qliro\QliroOne\Api\Admin\Builder\OrderItemHandlerInterface;
+use Qliro\QliroOne\Api\Data\QliroShipmentInterface;
 use Qliro\QliroOne\Model\Product\Type\OrderSourceProvider;
 use Qliro\QliroOne\Model\Product\Type\TypePoolHandler;
 use Qliro\QliroOne\Api\Data\QliroShipmentInterfaceFactory;
@@ -88,7 +89,7 @@ class InvoiceShipmentsBuilder
     /**
      * Create an array of containers
      *
-     * @return \Qliro\QliroOne\Api\Data\QliroOrderItemInterface[]
+     * @return \Qliro\QliroOne\Api\Data\QliroShipmentInterface[]
      */
     public function create()
     {
