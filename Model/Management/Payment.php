@@ -249,7 +249,7 @@ class Payment extends AbstractManagement
         $this->shipmentMarkItemsAsShippedRequestBuilder->setShipment($shipment);
         $request = $this->shipmentMarkItemsAsShippedRequestBuilder->create();
 
-        if (count($request->getOrderItems()) == 0) {
+        if (count($request->getShipments()) == 0) {
             return;
         }
 

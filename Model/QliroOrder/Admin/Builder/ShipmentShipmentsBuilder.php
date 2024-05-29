@@ -7,6 +7,7 @@
 namespace Qliro\QliroOne\Model\QliroOrder\Admin\Builder;
 
 use Qliro\QliroOne\Api\Admin\Builder\OrderItemHandlerInterface;
+use Qliro\QliroOne\Api\Data\QliroShipmentInterface;
 use Qliro\QliroOne\Model\Product\Type\OrderSourceProvider;
 use Qliro\QliroOne\Model\Product\Type\TypePoolHandler;
 use Qliro\QliroOne\Api\Data\QliroShipmentInterfaceFactory;
@@ -80,7 +81,7 @@ class ShipmentShipmentsBuilder
     /**
      * Create an array of containers
      *
-     * @return \Qliro\QliroOne\Api\Data\QliroOrderItemInterface[]
+     * @return \Qliro\QliroOne\Api\Data\QliroShipmentInterface[];
      */
     public function create()
     {
@@ -149,13 +150,12 @@ class ShipmentShipmentsBuilder
 
         $shipment = $this->qliroShipmentFactory->create();
         $shipment->setOrderItems($shipmentOrderItems);
-        $shipment->setPaymentTransactionId($this->shipment->getOrderId());
 
         $this->order = null;
         $this->shipment = null;
         $this->orderSourceProvider->setOrder($this->order);
 
-        return $shipmentOrderItems;
+        return [$shipment];
     }
 
     /**
