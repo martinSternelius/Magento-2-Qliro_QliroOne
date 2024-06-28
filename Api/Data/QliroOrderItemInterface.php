@@ -65,7 +65,7 @@ interface QliroOrderItemInterface extends ContainerInterface
     /**
      * @return array
      */
-    public function getMetaData();
+    public function getMetadata();
 
     /**
      * @param string $value
@@ -118,5 +118,5 @@ interface QliroOrderItemInterface extends ContainerInterface
      * @param array $value
      * @return $this
      */
-    public function setMetaData($value);
+    public function setMetadata($value);
 }

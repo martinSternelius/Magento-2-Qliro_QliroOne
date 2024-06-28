@@ -298,6 +298,10 @@ class CreateRequestBuilder
             $this->getCallbackUrl('checkout/qliro_callback/transactionStatus')
         );
 
+        $createRequest->setMerchantNotificationUrl(
+            $this->getCallbackUrl('checkout/qliro_callback/merchantNotification')
+        );
+
         $createRequest->setMerchantOrderValidationUrl($this->getCallbackUrl('checkout/qliro_callback/validate'));
 
         $createRequest->setMerchantOrderAvailableShippingMethodsUrl(

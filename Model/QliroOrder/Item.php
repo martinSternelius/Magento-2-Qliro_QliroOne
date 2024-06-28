@@ -16,7 +16,7 @@ class Item implements QliroOrderItemInterface
     /**
      * @var string
      */
-    private $merchantReference;
+    protected $merchantReference;
 
     /**
      * Get item type.
@@ -24,32 +24,32 @@ class Item implements QliroOrderItemInterface
      *
      * @var string
      */
-    private $type;
+    protected $type;
 
     /**
      * @var int
      */
-    private $quantity;
+    protected $quantity;
 
     /**
      * @var float
      */
-    private $pricePerItemIncVat;
+    protected $pricePerItemIncVat;
 
     /**
      * @var float
      */
-    private $pricePerItemExVat;
+    protected $pricePerItemExVat;
 
     /**
      * @var string
      */
-    private $description;
+    protected $description;
 
     /**
      * @var array
      */
-    private $metaData;
+    protected $metadata;
 
     /**
      * Getter.
@@ -182,18 +182,18 @@ class Item implements QliroOrderItemInterface
      *
      * @return array
      */
-    public function getMetaData()
+    public function getMetadata()
     {
-        return $this->metaData;
+        return $this->metadata;
     }
 
     /**
-     * @param array $metaData
+     * @param array $metadata
      * @return Item
      */
-    public function setMetaData($metaData)
+    public function setMetadata($metadata)
     {
-        $this->metaData = $metaData;
+        $this->metadata = $metadata;
 
         return $this;
     }

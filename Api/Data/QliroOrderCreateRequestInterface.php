@@ -66,6 +66,11 @@ interface QliroOrderCreateRequestInterface extends ContainerInterface
     /**
      * @return string
      */
+    public function getMerchantNotificationUrl();
+
+    /**
+     * @return string
+     */
     public function getMerchantOrderValidationUrl();
 
     /**
@@ -202,6 +207,12 @@ interface QliroOrderCreateRequestInterface extends ContainerInterface
      * @return $this
      */
     public function setMerchantOrderManagementStatusPushUrl($value);
+
+    /**
+     * @param string $value
+     * @return $this
+     */
+    public function setMerchantNotificationUrl($value);
 
     /**
      * @param string $value
