@@ -268,6 +268,14 @@
                             The last example means the tag to Nshift is called cartprice, the function is Cart Price and we use the grand_total attribute of the cart.]]>
                         </comment>
                     </field>
+                    <field id="admin_show_shipping_address_with_shipping_info" translate="label comment" type="select" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
+                        <label>Show Shipping Address with Shipping Method Info</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <comment>In Admin Order view, show shipping address info together with the shipping method info.</comment>
+                        <depends>
+                            <field id="enable">1</field>
+                        </depends>
+                    </field>
                 </group>
             </group>
         </section>

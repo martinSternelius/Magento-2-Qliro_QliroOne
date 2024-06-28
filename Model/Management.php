@@ -10,6 +10,8 @@ use Magento\Sales\Model\Order;
 use Qliro\QliroOne\Api\Data\QliroOrderInterface;
 use Qliro\QliroOne\Api\Data\ValidateOrderNotificationInterface;
 use Qliro\QliroOne\Api\Data\CheckoutStatusInterface;
+use Qliro\QliroOne\Api\Data\MerchantNotificationInterface;
+use Qliro\QliroOne\Api\Data\MerchantNotificationResponseInterface;
 use Qliro\QliroOne\Api\ManagementInterface;
 use Qliro\QliroOne\Api\Data\UpdateShippingMethodsNotificationInterface;
 use Qliro\QliroOne\Model\Management\AbstractManagement;
@@ -22,7 +24,7 @@ use Qliro\QliroOne\Model\Management\QliroOrder;
 use Qliro\QliroOne\Model\Management\Quote;
 use Qliro\QliroOne\Model\Management\ShippingMethod;
 use Qliro\QliroOne\Model\Management\TransactionStatus;
-
+use Qliro\QliroOne\Model\Management\MerchantNotification;
 
 /**
  * QliroOne management class
@@ -63,6 +65,16 @@ class Management extends AbstractManagement implements ManagementInterface
     private $transactionStatusManagement;
 
     /**
+     * @var QuoteManagement
+     */
+    private $quoteManagement;
+
+    /**
+     * @var MerchantNotification
+     */
+    private $merchantNotificationManagement;
+
+    /**
      * Inject dependencies
      *
      * @param Admin $adminManagement
@@ -74,6 +86,7 @@ class Management extends AbstractManagement implements ManagementInterface
      * @param Quote $quote
      * @param ShippingMethod $shippingMethodManagement
      * @param TransactionStatus $transactionStatusManagement
+     * @param MerchantNotification $merchantNotificationManagement
      */
     public function __construct(
         Admin $adminManagement,
@@ -84,7 +97,8 @@ class Management extends AbstractManagement implements ManagementInterface
         QliroOrder $qliroOrderManagement,
         Quote $quoteManagement,
         ShippingMethod $shippingMethodManagement,
-        TransactionStatus $transactionStatusManagement
+        TransactionStatus $transactionStatusManagement,
+        MerchantNotification $merchantNotificationManagement
     ) {
         $this->adminManagement = $adminManagement;
         $this->checkoutStatusManagement = $checkoutStatusManagement;
@@ -95,6 +109,7 @@ class Management extends AbstractManagement implements ManagementInterface
         $this->quoteManagement = $quoteManagement;
         $this->shippingMethodManagement = $shippingMethodManagement;
         $this->transactionStatusManagement = $transactionStatusManagement;
+        $this->merchantNotificationManagement = $merchantNotificationManagement;
     }
 
     /**
@@ -285,5 +300,13 @@ class Management extends AbstractManagement implements ManagementInterface
     public function getAdminQliroOrder($qliroOrderId)
     {
         return $this->adminManagement->getQliroOrder($qliroOrderId);
+    }
+    
+    /**
+     * @inheritDoc
+     */
+    public function merchantNotification(MerchantNotificationInterface $container): MerchantNotificationResponseInterface
+    {
+        return $this->merchantNotificationManagement->execute($container);
     }
 }

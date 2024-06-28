@@ -58,6 +58,7 @@ class Config
     const QLIROONE_ADDITIONAL_INFO_QLIRO_ORDER_ID = 'qliro_order_id';
     const QLIROONE_ADDITIONAL_INFO_PAYMENT_METHOD_CODE = 'qliro_payment_method_code';
     const QLIROONE_ADDITIONAL_INFO_PAYMENT_METHOD_NAME = 'qliro_payment_method_name';
+    const QLIROONE_ADDITIONAL_INFO_SHIPPING_PROPERTIES = 'qliro_payment_shipping_properties';
 
     const CONFIG_FEE_AMOUNT = 'fee';
     const CONFIG_FEE_TITLE = 'description';

@@ -8,6 +8,8 @@ namespace Qliro\QliroOne\Api;
 
 use Magento\Sales\Model\Order;
 use Qliro\QliroOne\Api\Data\CheckoutStatusInterface;
+use Qliro\QliroOne\Api\Data\MerchantNotificationInterface;
+use Qliro\QliroOne\Api\Data\MerchantNotificationResponseInterface;
 use Qliro\QliroOne\Api\Data\QliroOrderInterface;
 use Qliro\QliroOne\Api\Data\UpdateShippingMethodsNotificationInterface;
 use Qliro\QliroOne\Api\Data\ValidateOrderNotificationInterface;
@@ -155,4 +157,14 @@ interface ManagementInterface
      * @return \Qliro\QliroOne\Api\Data\AdminOrderInterface
      */
     public function getAdminQliroOrder($qliroOrderId);
+
+    /**
+     * Handle Merchant Notification
+     *
+     * @param MerchantNotificationInterface $container
+     * @return MerchantNotificationResponseInterface
+     */
+    public function merchantNotification(
+        MerchantNotificationInterface $container
+    ): MerchantNotificationResponseInterface;
 }
