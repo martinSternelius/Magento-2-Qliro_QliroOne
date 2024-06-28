@@ -199,10 +199,13 @@
     <preference for="Qliro\QliroOne\Api\Data\ValidateOrderResponseInterface" type="Qliro\QliroOne\Model\Notification\ValidateOrderResponse" />
     <preference for="Qliro\QliroOne\Api\Data\CheckoutStatusInterface" type="Qliro\QliroOne\Model\Notification\CheckoutStatus" />
     <preference for="Qliro\QliroOne\Api\Data\CheckoutStatusResponseInterface" type="Qliro\QliroOne\Model\Notification\CheckoutStatusResponse" />
+    <preference for="Qliro\QliroOne\Api\Data\MerchantNotificationInterface" type="Qliro\QliroOne\Model\Notification\MerchantNotification" />
+    <preference for="Qliro\QliroOne\Api\Data\MerchantNotificationResponseInterface" type="Qliro\QliroOne\Model\Notification\MerchantNotificationResponse" />
     <preference for="Qliro\QliroOne\Api\Data\QliroOrderManagementStatusInterface" type="Qliro\QliroOne\Model\Notification\QliroOrderManagementStatus" />
     <preference for="Qliro\QliroOne\Api\Data\QliroOrderManagementStatusResponseInterface" type="Qliro\QliroOne\Model\Notification\QliroOrderManagementStatusResponse" />
 
-    <preference for="Qliro\QliroOne\Api\Data\AdminOrderInterface" type="Qliro\QliroOne\Model\QliroOrder\Admin\AdminOrdere" />
+    <preference for="Qliro\QliroOne\Api\Data\AdminOrderInterface" type="Qliro\QliroOne\Model\QliroOrder\Admin\AdminOrder" />
+    <preference for="Qliro\QliroOne\Api\Data\AdminOrderItemActionInterface" type="Qliro\QliroOne\Model\QliroOrder\Admin\OrderItemAction" />
     <preference for="Qliro\QliroOne\Api\Data\AdminMarkItemsAsShippedRequestInterface" type="Qliro\QliroOne\Model\QliroOrder\Admin\MarkItemsAsShippedRequest" />
     <preference for="Qliro\QliroOne\Api\Data\AdminCancelOrderRequestInterface" type="Qliro\QliroOne\Model\QliroOrder\Admin\CancelOrderRequest" />
     <preference for="Qliro\QliroOne\Api\Data\AdminUpdateMerchantReferenceRequestInterface" type="Qliro\QliroOne\Model\QliroOrder\Admin\UpdateMerchantReferenceRequest" />

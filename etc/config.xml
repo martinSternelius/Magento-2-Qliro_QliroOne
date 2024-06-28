@@ -87,9 +87,9 @@
                 <active>1</active>
                 <sallowspecific>0</sallowspecific>
                 <model>Qliro\QliroOne\Model\Carrier\Unifaun</model>
-                <name>Qlrio One Unifaun Shipping</name>
+                <name>Qliro One Unifaun Shipping</name>
                 <price>999999999</price>
-                <title>Qlrio One Unifaun Shipping</title>
+                <title>Qliro One Unifaun Shipping</title>
                 <specificerrmsg>This shipping method is only available if Nshift is active</specificerrmsg>
                 <handling_type>F</handling_type>
                 <showmethod>0</showmethod>

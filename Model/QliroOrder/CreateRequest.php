@@ -69,6 +69,11 @@ class CreateRequest implements QliroOrderCreateRequestInterface
     /**
      * @var string
      */
+    private $merchantNotificationUrl;
+
+    /**
+     * @var string
+     */
     private $merchantOrderValidationUrl;
 
     /**
@@ -349,15 +354,36 @@ class CreateRequest implements QliroOrderCreateRequestInterface
     }
 
     /**
-     * @param string $merchantOrderManagementStatusPushUrl
+     * @param string $value
      * @return CreateRequest
      */
-    public function setMerchantOrderManagementStatusPushUrl($merchantOrderManagementStatusPushUrl)
+    public function setMerchantOrderManagementStatusPushUrl($value)
     {
-        if (self::TEST_LOCAL_URL && $merchantOrderManagementStatusPushUrl) {
-            $merchantOrderManagementStatusPushUrl = $this->httpToHttps((string)$merchantOrderManagementStatusPushUrl);
+        if (self::TEST_LOCAL_URL && $value) {
+            $value = $this->httpToHttps((string)$value);
         }
-        $this->merchantOrderManagementStatusPushUrl = $merchantOrderManagementStatusPushUrl;
+        $this->merchantOrderManagementStatusPushUrl = $value;
+
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getMerchantNotificationUrl()
+    {
+        return $this->merchantNotificationUrl;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setMerchantNotificationUrl($value)
+    {
+        if (self::TEST_LOCAL_URL && $value) {
+            $value = $this->httpToHttps((string)$value);
+        }
+        $this->merchantNotificationUrl = $value;
 
         return $this;
     }

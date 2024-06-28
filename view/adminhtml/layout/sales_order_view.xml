@@ -10,5 +10,23 @@
         <referenceBlock name="order_totals">
             <block class="Qliro\QliroOne\Block\Adminhtml\Sales\Order\Totals" name="qliroone_fee" as="qliroone_fee"/>
         </referenceBlock>
+        <referenceBlock name="order_tab_info">
+            <block class="Magento\Sales\Block\Adminhtml\Order\AbstractOrder" name="order_shipping_view" template="Qliro_QliroOne::order/view/shipping/info.phtml">
+                <arguments>
+                    <argument name="view_model" xsi:type="object">Qliro\QliroOne\ViewModel\Adminhtml\Order\View\Shipping</argument>
+                </arguments>
+                <block
+                    class="Magento\Sales\Block\Adminhtml\Order\AbstractOrder"
+                    name="order_shipping_view_address"
+                    as="address"
+                    template="Qliro_QliroOne::order/view/shipping/info/address.phtml"
+                    ifconfig="payment/qliroone/unifaun/admin_show_shipping_address_with_shipping_info"
+                >
+                    <arguments>
+                        <argument name="view_model" xsi:type="object">Qliro\QliroOne\ViewModel\Adminhtml\Order\View\Shipping</argument>
+                    </arguments>
+                </block>
+            </block>
+        </referenceBlock>
     </body>
 </page>

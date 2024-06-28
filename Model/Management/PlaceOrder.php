@@ -26,6 +26,7 @@ use Qliro\QliroOne\Model\ResourceModel\Lock;
 use Qliro\QliroOne\Model\Exception\TerminalException;
 use Qliro\QliroOne\Model\Exception\FailToLockException;
 use Magento\Sales\Model\Order\Email\Sender\OrderSender;
+use Qliro\QliroOne\Api\Data\LinkInterface;
 
 /**
  * QliroOne management class
@@ -306,6 +307,7 @@ class PlaceOrder extends AbstractManagement
 
                     $this->quoteFromOrderConverter->convert($qliroOrder, $this->getQuote());
                     $this->addAdditionalInfoToQuote($link, $qliroOrder->getPaymentMethod());
+                    $this->addAdditionalShippingInfoToQuote($qliroOrder);
                     $this->quoteManagement->setQuote($this->getQuote())->recalculateAndSaveQuote();
 
                     $order = $this->orderPlacer->place($this->getQuote());
@@ -491,6 +493,28 @@ class PlaceOrder extends AbstractManagement
                 Config::QLIROONE_ADDITIONAL_INFO_PAYMENT_METHOD_NAME,
                 $paymentMethod->getPaymentMethodName()
             );
+        }
+    }
+
+    /**
+     * @param QliroOrderInterface $order
+     * @return void
+     */
+    private function addAdditionalShippingInfoToQuote(QliroOrderInterface $order)
+    {
+        $payment = $this->getQuote()->getPayment();
+        foreach ($order->getOrderItems() as $orderItem) {
+            $metadata = $orderItem->getMetadata();
+            $additionalShippingProperties = $metadata['AdditionalShippingProperties'] ?? false;
+            if (!$additionalShippingProperties) {
+                continue;
+            }
+
+            $payment->setAdditionalInformation(
+                Config::QLIROONE_ADDITIONAL_INFO_SHIPPING_PROPERTIES,
+                $additionalShippingProperties
+            );
+            return;
         }
     }
 
