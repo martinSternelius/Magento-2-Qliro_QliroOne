@@ -15,7 +15,6 @@ use Qliro\QliroOne\Api\Data\LinkInterface;
 use Qliro\QliroOne\Api\Data\LinkInterfaceFactory;
 use Qliro\QliroOne\Api\Data\QliroOrderCustomerInterface;
 use Qliro\QliroOne\Api\Data\CheckoutStatusInterface;
-use Qliro\QliroOne\Api\HashResolverInterface;
 use Qliro\QliroOne\Api\LinkRepositoryInterface;
 use Qliro\QliroOne\Model\Config;
 use Qliro\QliroOne\Model\ContainerMapper;
@@ -30,6 +29,7 @@ use Magento\Framework\Serialize\Serializer\Json;
 use Magento\Quote\Model\Quote as ModelQuote;
 use Magento\Quote\Model\QuoteRepository\LoadHandler;
 use Qliro\QliroOne\Helper\Data as Helper;
+use Qliro\QliroOne\Service\General\LinkService;
 
 /**
  * QliroOne management class
@@ -40,6 +40,11 @@ class Quote extends AbstractManagement
      * @var \Qliro\QliroOne\Model\Config
      */
     private $qliroConfig;
+
+    /**
+     * @var LinkService
+     */
+    private $linkService;
 
     /**
      * @var \Qliro\QliroOne\Api\Client\MerchantInterface
@@ -60,11 +65,6 @@ class Quote extends AbstractManagement
      * @var \Qliro\QliroOne\Api\LinkRepositoryInterface
      */
     private $linkRepository;
-
-    /**
-     * @var \Qliro\QliroOne\Api\HashResolverInterface
-     */
-    private $hashResolver;
 
     /**
      * @var \Magento\Quote\Api\CartRepositoryInterface
@@ -121,13 +121,13 @@ class Quote extends AbstractManagement
     /**
      * Inject dependencies
      * @param Config $qliroConfig
+     * @param LinkService $merchantReferenceGenerator
      * @param MerchantInterface $merchantApi
      * @param CreateRequestBuilder $createRequestBuilder
      * @param UpdateRequestBuilder $updateRequestBuilder
      * @param CustomerConverter $customerConverter
      * @param LinkInterfaceFactory $linkFactory
      * @param LinkRepositoryInterface $linkRepository
-     * @param HashResolverInterface $hashResolver
      * @param CartRepositoryInterface $quoteRepository
      * @param ContainerMapper $containerMapper
      * @param LogManager $logManager
@@ -140,13 +140,13 @@ class Quote extends AbstractManagement
      */
     public function __construct(
         Config $qliroConfig,
+        LinkService $merchantReferenceGenerator,
         MerchantInterface $merchantApi,
         CreateRequestBuilder $createRequestBuilder,
         UpdateRequestBuilder $updateRequestBuilder,
         CustomerConverter $customerConverter,
         LinkInterfaceFactory $linkFactory,
         LinkRepositoryInterface $linkRepository,
-        HashResolverInterface $hashResolver,
         CartRepositoryInterface $quoteRepository,
         ContainerMapper $containerMapper,
         LogManager $logManager,
@@ -158,11 +158,11 @@ class Quote extends AbstractManagement
         CountrySelect $countrySelectManagement
     ) {
         $this->qliroConfig = $qliroConfig;
+        $this->linkService = $merchantReferenceGenerator;
         $this->merchantApi = $merchantApi;
         $this->createRequestBuilder = $createRequestBuilder;
         $this->linkFactory = $linkFactory;
         $this->linkRepository = $linkRepository;
-        $this->hashResolver = $hashResolver;
         $this->quoteRepository = $quoteRepository;
         $this->containerMapper = $containerMapper;
         $this->logManager = $logManager;
@@ -261,7 +261,7 @@ class Quote extends AbstractManagement
             $this->update($link->getQliroOrderId());
         } else {
             $this->logManager->debug('create new qliro order'); // @todo: remove
-            $orderReference = $this->generateOrderReference();
+            $orderReference = $this->linkService->generateOrderReference($quote);
             $this->logManager->setMerchantReference($orderReference);
 
             $request = $this->createRequestBuilder->setQuote($quote)->create();
@@ -403,38 +403,6 @@ class Quote extends AbstractManagement
     }
 
     /**
-     * Generate a QliroOne unique order reference
-     *
-     * @return string
-     */
-    public function generateOrderReference()
-    {
-        $quote = $this->getQuote();
-        $hash = $this->hashResolver->resolveHash($quote);
-        $this->validateHash($hash);
-        $hashLength = self::REFERENCE_MIN_LENGTH;
-
-        do {
-            $isUnique = false;
-            $shortenedHash = substr($hash, 0, $hashLength);
-
-            try {
-                $this->linkRepository->getByReference($shortenedHash);
-
-                if ((++$hashLength) > HashResolverInterface::HASH_MAX_LENGTH) {
-                    $hash = $this->hashResolver->resolveHash($quote);
-                    $this->validateHash($hash);
-                    $hashLength = self::REFERENCE_MIN_LENGTH;
-                }
-            } catch (NoSuchEntityException $exception) {
-                $isUnique = true;
-            }
-        } while (!$isUnique);
-
-        return $shortenedHash;
-    }
-
-    /**
      * Update customer with data from QliroOne frontend callback
      *
      * @param array $customerData
@@ -541,18 +509,6 @@ class Quote extends AbstractManagement
         }
 
         return true;
-    }
-
-    /**
-     * Validate hash against QliroOne order merchant reference requirements
-     *
-     * @param string $hash
-     */
-    private function validateHash($hash)
-    {
-        if (!preg_match(HashResolverInterface::VALIDATE_MERCHANT_REFERENCE, $hash)) {
-            throw new \DomainException(sprintf('Merchant reference \'%s\' will not be accepted by Qliro', $hash));
-        }
     }
 
     /**

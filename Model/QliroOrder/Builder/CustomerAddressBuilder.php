@@ -6,7 +6,7 @@
 
 namespace Qliro\QliroOne\Model\QliroOrder\Builder;
 
-use Magento\Customer\Model\Address;
+use Magento\Customer\Model\Address\AbstractAddress;
 use Qliro\QliroOne\Api\Data\QliroOrderCustomerAddressInterfaceFactory;
 
 /**
@@ -17,7 +17,7 @@ class CustomerAddressBuilder
     const STREET_ADDRESS_SEPARATOR = '; ';
 
     /**
-     * @var \Magento\Customer\Model\Address
+     * @var \Magento\Customer\Model\Address\AbstractAddress
      */
     private $address;
 
@@ -37,12 +37,12 @@ class CustomerAddressBuilder
     }
 
     /**
-     * Set a customer to extract data
+     * Set an address to extract data
      *
-     * @param \Magento\Customer\Model\Address $address
+     * @param \Magento\Customer\Model\Address\AbstractAddress $address
      * @return $this
      */
-    public function setAddress(Address $address)
+    public function setAddress(AbstractAddress $address)
     {
         $this->address = $address;
 
@@ -57,7 +57,7 @@ class CustomerAddressBuilder
     public function create()
     {
         if (empty($this->address)) {
-            throw new \LogicException('Customer address entity is not set.');
+            throw new \LogicException('Address entity is not set.');
         }
 
         /** @var \Qliro\QliroOne\Api\Data\QliroOrderCustomerAddressInterface $qliroOrderCustomerAddress */

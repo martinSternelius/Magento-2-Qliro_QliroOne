@@ -75,6 +75,13 @@ All settings here are website-specific.
   defaulted to the website's home page.
 - **Integrity Policy URL** — if specified, must be a valid URL to Integrity Policy URL.
 
+### Recurring Payments Settings
+
+All settings here are Store View specific.
+
+- **Enabled** — Enable or disable recurring payments.
+- **Frequency Options** – Configure the subscription frequencies that should be available for Customers to choose from in checkout.
+
 ### Notification Callbacks
 
 - **XDebug Session Flag Name for callback URLs** — store-specific value for the XDEBUG session flag used in callbacks

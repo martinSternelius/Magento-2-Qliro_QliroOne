@@ -9,6 +9,7 @@ namespace Qliro\QliroOne\Model\Api\Client;
 use GuzzleHttp\Exception\RequestException;
 use Magento\Framework\Serialize\Serializer\Json;
 use Qliro\QliroOne\Api\Data\AdminCancelOrderRequestInterface;
+use Qliro\QliroOne\Api\Data\AdminCreateMerchantPaymentResponseInterface;
 use Qliro\QliroOne\Api\Data\AdminMarkItemsAsShippedRequestInterface;
 use Qliro\QliroOne\Api\Data\AdminOrderInterface;
 use Qliro\QliroOne\Api\Data\AdminOrderPaymentTransactionInterface;
@@ -75,6 +76,7 @@ class OrderManagement implements \Qliro\QliroOne\Api\Client\OrderManagementInter
      * @param \Qliro\QliroOne\Model\ContainerMapper $containerMapper
      * @param \Qliro\QliroOne\Api\Data\QliroOrderInterfaceFactory $qliroOrderFactory
      * @param \Qliro\QliroOne\Model\Logger\Manager $logManager
+     * @param \Magento\Framework\DataObject\IdentityGeneratorInterface $idGenerator
      */
     public function __construct(
         Service $service,
@@ -317,6 +319,41 @@ class OrderManagement implements \Qliro\QliroOne\Api\Client\OrderManagementInter
 
             /** @var \Qliro\QliroOne\Api\Data\AdminOrderPaymentTransactionInterface $container */
             $container = $this->containerMapper->fromArray($response, AdminOrderPaymentTransactionInterface::class);
+        } catch (\Exception $exception) {
+            $this->handleExceptions($exception);
+        }
+
+        return $container;
+    }
+
+    /**
+     * Create a Merchant Payment
+     *
+     * @param \Qliro\QliroOne\Api\Data\AdminCreateMerchantPaymentRequestInterface $request
+     * @param integer|null $storeId
+     * @return AdminCreateMerchantPaymentResponseInterface|null
+     * @throws ClientException
+     */
+    public function createMerchantPayment(
+        \Qliro\QliroOne\Api\Data\AdminCreateMerchantPaymentRequestInterface $request,
+        ?int $storeId = null
+    ): ?AdminCreateMerchantPaymentResponseInterface {
+        $container = null;
+
+        try {
+            $request->setRequestId($this->idGenerator->generateId());
+            $payload = $this->containerMapper->toArray($request);
+            $response = $this->service->post(
+                'checkout/adminapi/v2/merchantpayment',
+                $payload,
+                $storeId
+            );
+
+            /** @var \Qliro\QliroOne\Api\Data\AdminCreateMerchantPaymentResponseInterface $container */
+            $container = $this->containerMapper->fromArray(
+                $response,
+                AdminCreateMerchantPaymentResponseInterface::class
+            );
         } catch (\Exception $exception) {
             $this->handleExceptions($exception);
         }

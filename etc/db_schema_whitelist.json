@@ -1,0 +1,18 @@
+{
+    "qliroone_recurring_info": {
+        "column": {
+            "entity_id": true,
+            "original_order_id": true,
+            "frequency_option": true,
+            "payment_method": true,
+            "saved_credit_card_id": true,
+            "next_order_date": true,
+            "canceled_date": true,
+            "personal_number": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "QLIROONE_RECURRING_INFO_ORIGINAL_ORDER_ID_SALES_ORDER_ENTITY_ID": true
+        }
+    }
+}

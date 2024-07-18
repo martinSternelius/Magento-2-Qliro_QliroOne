@@ -13,8 +13,6 @@ use Magento\Quote\Api\Data\CartInterface;
  */
 abstract class AbstractManagement
 {
-    const REFERENCE_MIN_LENGTH = 6;
-
     const QLIRO_SKIP_ACTUAL_CAPTURE = 'qliro_skip_actual_capture';
 
     // CheckoutStatus can only create an order, if POLL was unsuccessful for 1 minute

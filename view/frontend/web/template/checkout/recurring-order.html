@@ -1,0 +1,27 @@
+<form data-role="qliro-one-country-selector" class="opc-payment-additional">
+    <div class="field recurring-order-toggle">
+        <label class="label" for="qliro-one-recurring-order-toggle">
+            <span data-bind="i18n: 'Subscription'"></span>
+        </label>
+        <div class="control">
+            <input type="checkbox" id="qliro-one-recurring-order-toggle" name="qliro-one-recurring-order-toggle" data-bind="
+                checked: isRecurring,
+                event: {change: onRecurringConfigChange}
+            ">
+        </div>
+    </div>
+    <div class="field recurring-order-frequency-option">
+        <label class="label" for="qliro-one-recurring-order-frequency-option">
+            <span data-bind="i18n: 'Subscription Interval'"></span>
+        </label>
+        <div class="control">
+            <select id="qliro-one-recurring-order-frequency-option" name="qliro-one-recurring-order-frequency-option" data-bind="
+                options: availableFrequencyOptions,
+                value: selectedFrequencyOption,
+                optionsText: 'label',
+                optionsValue: 'value',
+                event: {change: onRecurringConfigChange}
+            "></select>
+        </div>
+    </div>
+</form>

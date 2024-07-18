@@ -65,6 +65,11 @@ class TypeSourceItem implements TypeSourceItemInterface
     private $parent;
 
     /**
+     * @var boolean
+     */
+    private bool $subscription = false;
+
+    /**
      * Getter.
      *
      * @return int
@@ -268,6 +273,25 @@ class TypeSourceItem implements TypeSourceItemInterface
     public function setParent($value)
     {
         $this->parent = $value;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getSubscription()
+    {
+        return $this->subscription;
+    }
+
+    /**
+     * @param bool $value
+     * @return $this
+     */
+    public function setSubscription(bool $value)
+    {
+        $this->subscription = $value;
 
         return $this;
     }
