@@ -64,6 +64,11 @@ class CreateRequest implements QliroOrderCreateRequestInterface
     /**
      * @var string
      */
+    private string $merchantSavedCreditCardPushUrl = '';
+
+    /**
+     * @var string
+     */
     private $merchantOrderManagementStatusPushUrl;
 
     /**
@@ -341,6 +346,22 @@ class CreateRequest implements QliroOrderCreateRequestInterface
         $this->merchantCheckoutStatusPushUrl = $merchantCheckoutStatusPushUrl;
 
         return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getMerchantSavedCreditCardPushUrl()
+    {
+        return $this->merchantSavedCreditCardPushUrl;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setMerchantSavedCreditCardPushUrl($value)
+    {
+        $this->merchantSavedCreditCardPushUrl = $value;
     }
 
     /**

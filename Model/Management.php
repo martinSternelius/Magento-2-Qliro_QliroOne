@@ -12,6 +12,8 @@ use Qliro\QliroOne\Api\Data\ValidateOrderNotificationInterface;
 use Qliro\QliroOne\Api\Data\CheckoutStatusInterface;
 use Qliro\QliroOne\Api\Data\MerchantNotificationInterface;
 use Qliro\QliroOne\Api\Data\MerchantNotificationResponseInterface;
+use Qliro\QliroOne\Api\Data\MerchantSavedCreditCardNotificationInterface;
+use Qliro\QliroOne\Api\Data\MerchantSavedCreditCardResponseInterface;
 use Qliro\QliroOne\Api\ManagementInterface;
 use Qliro\QliroOne\Api\Data\UpdateShippingMethodsNotificationInterface;
 use Qliro\QliroOne\Model\Management\AbstractManagement;
@@ -25,6 +27,7 @@ use Qliro\QliroOne\Model\Management\Quote;
 use Qliro\QliroOne\Model\Management\ShippingMethod;
 use Qliro\QliroOne\Model\Management\TransactionStatus;
 use Qliro\QliroOne\Model\Management\MerchantNotification;
+use Qliro\QliroOne\Model\Management\SavedCreditCard;
 
 /**
  * QliroOne management class
@@ -56,6 +59,10 @@ class Management extends AbstractManagement implements ManagementInterface
      */
     private $qliroOrderManagement;
     /**
+     * @var Quote
+     */
+    private Quote $quoteManagement;
+    /**
      * @var ShippingMethod
      */
     private $shippingMethodManagement;
@@ -65,14 +72,14 @@ class Management extends AbstractManagement implements ManagementInterface
     private $transactionStatusManagement;
 
     /**
-     * @var QuoteManagement
-     */
-    private $quoteManagement;
-
-    /**
      * @var MerchantNotification
      */
     private $merchantNotificationManagement;
+
+    /**
+     * @var SavedCreditCard
+     */
+    private $savedCreditCardManagement;
 
     /**
      * Inject dependencies
@@ -87,6 +94,7 @@ class Management extends AbstractManagement implements ManagementInterface
      * @param ShippingMethod $shippingMethodManagement
      * @param TransactionStatus $transactionStatusManagement
      * @param MerchantNotification $merchantNotificationManagement
+     * @param SavedCreditCard $savedCreditCardManagement
      */
     public function __construct(
         Admin $adminManagement,
@@ -98,7 +106,8 @@ class Management extends AbstractManagement implements ManagementInterface
         Quote $quoteManagement,
         ShippingMethod $shippingMethodManagement,
         TransactionStatus $transactionStatusManagement,
-        MerchantNotification $merchantNotificationManagement
+        MerchantNotification $merchantNotificationManagement,
+        SavedCreditCard $savedCreditCardManagement
     ) {
         $this->adminManagement = $adminManagement;
         $this->checkoutStatusManagement = $checkoutStatusManagement;
@@ -110,6 +119,7 @@ class Management extends AbstractManagement implements ManagementInterface
         $this->shippingMethodManagement = $shippingMethodManagement;
         $this->transactionStatusManagement = $transactionStatusManagement;
         $this->merchantNotificationManagement = $merchantNotificationManagement;
+        $this->savedCreditCardManagement = $savedCreditCardManagement;
     }
 
     /**
@@ -308,5 +318,17 @@ class Management extends AbstractManagement implements ManagementInterface
     public function merchantNotification(MerchantNotificationInterface $container): MerchantNotificationResponseInterface
     {
         return $this->merchantNotificationManagement->execute($container);
+    }
+
+    /**
+     * Update saved Credit Card
+     *
+     * @param MerchantSavedCreditCardNotificationInterface $merchantSavedCreditCardNotification
+     * @return MerchantSavedCreditCardResponseInterface
+     */
+    public function updateOrderSavedCreditCard(
+        MerchantSavedCreditCardNotificationInterface $merchantSavedCreditCardNotification
+    ): MerchantSavedCreditCardResponseInterface {
+        return $this->savedCreditCardManagement->update($merchantSavedCreditCardNotification);
     }
 }

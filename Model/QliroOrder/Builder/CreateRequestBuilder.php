@@ -294,6 +294,10 @@ class CreateRequestBuilder
             $this->getCallbackUrl('checkout/qliro_callback/checkoutStatus')
         );
 
+        $createRequest->setMerchantSavedCreditCardPushUrl(
+            $this->getCallbackUrl('checkout/qliro_callback/savedCreditCard')
+        );
+
         $createRequest->setMerchantOrderManagementStatusPushUrl(
             $this->getCallbackUrl('checkout/qliro_callback/transactionStatus')
         );

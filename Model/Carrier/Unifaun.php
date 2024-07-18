@@ -134,6 +134,11 @@ class Unifaun extends \Magento\Shipping\Model\Carrier\AbstractCarrier implements
 
         $method->setPrice($amount);
         $method->setCost($amount);
+        if($this->getQuote()->getShippingDescription() && strpos($this->getQuote()->getShippingDescription(), 'Unifaun -') !== false) {
+            $shipingMethod = explode(' - ', $this->getQuote()->getShippingDescription());
+            $method->setCarrierTitle($shipingMethod[0]);
+            $method->setMethodTitle($shipingMethod[1]);
+        }
 
         $result->append($method);
 

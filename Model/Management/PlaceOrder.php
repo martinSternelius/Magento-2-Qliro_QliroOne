@@ -27,6 +27,7 @@ use Qliro\QliroOne\Model\Exception\TerminalException;
 use Qliro\QliroOne\Model\Exception\FailToLockException;
 use Magento\Sales\Model\Order\Email\Sender\OrderSender;
 use Qliro\QliroOne\Api\Data\LinkInterface;
+use Qliro\QliroOne\Service\RecurringPayments\Data as RecurringDataService;
 
 /**
  * QliroOne management class
@@ -102,6 +103,11 @@ class PlaceOrder extends AbstractManagement
     private $paymentManagement;
 
     /**
+     * @var \Qliro\QliroOne\Service\RecurringPayments\Data
+     */
+    private $recurringDataService;
+
+    /**
      * Inject dependencies
      *
      * @param Config $qliroConfig
@@ -118,6 +124,7 @@ class PlaceOrder extends AbstractManagement
      * @param OrderSender $orderSender
      * @param Quote $quoteManagement
      * @param Payment $paymentManagement
+     * @param RecurringDataService $recurringDataService
      */
     public function __construct(
         Config $qliroConfig,
@@ -133,7 +140,8 @@ class PlaceOrder extends AbstractManagement
         Lock $lock,
         OrderSender $orderSender,
         Quote $quoteManagement,
-        Payment $paymentManagement
+        Payment $paymentManagement,
+        RecurringDataService $recurringDataService
     ) {
         $this->qliroConfig = $qliroConfig;
         $this->merchantApi = $merchantApi;
@@ -149,6 +157,7 @@ class PlaceOrder extends AbstractManagement
         $this->orderSender = $orderSender;
         $this->quoteManagement = $quoteManagement;
         $this->paymentManagement = $paymentManagement;
+        $this->recurringDataService = $recurringDataService;
     }
 
     /**
@@ -180,7 +189,9 @@ class PlaceOrder extends AbstractManagement
                         throw new FailToLockException(__('Failed to aquire lock when placing order'));
                     }
 
+                    $this->prepareQuoteRecurringInfo();
                     $order = $this->execute($responseContainer);
+                    $this->handlePlacedOrderRecurringInfo($order, $responseContainer->getCustomer()->getPersonalNumber());
 
                     $this->lock->unlock($qliroOrderId);
 
@@ -533,5 +544,45 @@ class PlaceOrder extends AbstractManagement
         $order->setState($state);
         $order->setStatus($status);
         $this->orderRepository->save($order);
+    }
+
+    /**
+     * If recurring is enabled and selected in the quote, sets next recurring order date
+     *
+     * @return void
+     */
+    private function prepareQuoteRecurringInfo(): void
+    {
+        if (!$this->qliroConfig->isUseRecurring()) {
+            return;
+        }
+
+        $recurringInfo = $this->recurringDataService->quoteGetter($this->getQuote());
+        if (!$recurringInfo->getEnabled()) {
+            return;
+        }
+
+        $this->recurringDataService->scheduleNextRecurringOrder($this->getQuote());
+    }
+
+    /**
+     * If recurring is enabled and selected for order, will save a Recurring Info entity for the order
+     *
+     * @param Order $order
+     * @param string $personalNumber
+     * @return void
+     */
+    private function handlePlacedOrderRecurringInfo(Order $order, $personalNumber): void
+    {
+        if (!$this->qliroConfig->isUseRecurring()) {
+            return;
+        }
+
+        $recurringInfo = $this->recurringDataService->orderGetter($order);
+        if (!$recurringInfo->getEnabled()) {
+            return;
+        }
+
+        $this->recurringDataService->saveNewOrderRecurringInfo($order, $personalNumber);
     }
 }

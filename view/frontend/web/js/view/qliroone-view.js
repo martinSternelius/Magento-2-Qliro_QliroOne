@@ -32,10 +32,12 @@ define([
         defaults: {
             template: 'Qliro_QliroOne/checkout/onepage',
             imports: {
-                discountApplied: 'checkout.steps.billing-step.discount:isApplied'
+                discountApplied: 'checkout.steps.billing-step.discount:isApplied',
+                isRecurring: 'checkout.steps.qliro-recurring-order:isRecurring'
             },
         },
         discountApplied: ko.observable(false),
+        isRecurring: ko.observable(false),
 
         isVisible: ko.observable(true),
 

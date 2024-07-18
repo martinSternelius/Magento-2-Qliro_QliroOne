@@ -72,6 +72,9 @@ class Config
     const QLIROONE_UNIFAUN_CHECKOUT_ID = 'unifaun/checkout_id';
     const QLIROONE_UNIFAUN_PARAMETERS = 'unifaun/parameters';
 
+    const QLIROONE_RECURRING_ENABLE = 'recurring_payments/enable';
+    const QLIROONE_RECURRING_FREQUENCY_OPTIONS = 'recurring_payments/frequency_options';
+
     /**
      * Payment Fee tax class
      */
@@ -658,6 +661,24 @@ class Config
     public function getMinimumCustomerAge($storeId = null)
     {
         return (int)$this->adapter->getConfigData(self::QLIROONE_MINIMUM_CUSTOMER_AGE, $storeId);
+    }
+
+    /**
+     * @param int|null $storeId
+     * @return bool
+     */
+    public function isUseRecurring($storeId = null): bool
+    {
+        return !!$this->adapter->getConfigData(self::QLIROONE_RECURRING_ENABLE, $storeId);
+    }
+
+    /**
+     * @param int|null $storeId
+     * @return string
+     */
+    public function getRecurringFrequencyOptions($storeId = null): string
+    {
+        return $this->adapter->getConfigData(self::QLIROONE_RECURRING_FREQUENCY_OPTIONS, $storeId);
     }
 
     /**

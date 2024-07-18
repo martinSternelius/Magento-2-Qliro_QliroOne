@@ -11,6 +11,8 @@ use Qliro\QliroOne\Api\Product\TypeSourceItemInterface;
 use Qliro\QliroOne\Api\Product\TypeSourceItemInterfaceFactory;
 use Qliro\QliroOne\Api\Product\TypeSourceProviderInterface;
 use Qliro\QliroOne\Model\Product\ProductPool;
+use Qliro\QliroOne\Model\Config;
+use Qliro\QliroOne\Service\RecurringPayments\Data as RecurringDataService;
 
 /**
  * Quote Source Provider class
@@ -38,17 +40,33 @@ class QuoteSourceProvider implements TypeSourceProviderInterface
     private $typeSourceItemFactory;
 
     /**
+     * @var \Qliro\QliroOne\Model\Config
+     */
+    private $config;
+
+    /**
+     * @var \Qliro\QliroOne\Service\RecurringPayments\Data
+     */
+    private $recurringDataService;
+
+    /**
      * Inject dependencies
      *
      * @param \Qliro\QliroOne\Model\Product\ProductPool $productPool
      * @param \Qliro\QliroOne\Api\Product\TypeSourceItemInterfaceFactory $typeSourceItemFactory
+     * @param \Qliro\QliroOne\Model\Config $config
+     * @param \Qliro\QliroOne\Service\RecurringPayments\Data $recurringDataService
      */
     public function __construct(
         ProductPool $productPool,
-        TypeSourceItemInterfaceFactory $typeSourceItemFactory
+        TypeSourceItemInterfaceFactory $typeSourceItemFactory,
+        Config $config,
+        RecurringDataService $recurringDataService
     ) {
         $this->productPool = $productPool;
         $this->typeSourceItemFactory = $typeSourceItemFactory;
+        $this->config = $config;
+        $this->recurringDataService = $recurringDataService;
     }
 
     /**
@@ -142,6 +160,7 @@ class QuoteSourceProvider implements TypeSourceProviderInterface
             $sourceItem->setType($item->getProductType());
             $sourceItem->setProduct($item->getProduct());
             $sourceItem->setItem($item);
+            $this->setSubscriptionInSourceItem($sourceItem);
 
             $this->sourceItems[$item->getItemId()] = $sourceItem;
 
@@ -151,5 +170,21 @@ class QuoteSourceProvider implements TypeSourceProviderInterface
         }
 
         return $this->sourceItems[$item->getItemId()];
+    }
+
+    /**
+     * Sets subscription flag in source item if it has been set as enabled in quote payment
+     *
+     * @param TypeSourceItemInterface $sourceItem
+     * @return void
+     */
+    private function setSubscriptionInSourceItem(TypeSourceItemInterface $sourceItem): void
+    {
+        if (!$this->config->isUseRecurring()) {
+            return;
+        }
+
+        $recurringInfo = $this->recurringDataService->quoteGetter($this->quote);
+        $sourceItem->setSubscription(!!$recurringInfo->getEnabled());
     }
 }

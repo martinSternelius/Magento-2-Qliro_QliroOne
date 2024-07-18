@@ -24,6 +24,11 @@ interface QliroOrderCustomerInterface extends ContainerInterface
     public function getMobileNumber();
 
     /**
+     * $return string
+     */
+    public function getPersonalNumber();
+
+    /**
      * @return \Qliro\QliroOne\Api\Data\QliroOrderCustomerAddressInterface
      */
     public function getAddress();
@@ -59,6 +64,12 @@ interface QliroOrderCustomerInterface extends ContainerInterface
      * @return $this
      */
     public function setMobileNumber($value);
+
+    /**
+     * @param string $value
+     * @return $this
+     */
+    public function setPersonalNumber($value);
 
     /**
      * @param \Qliro\QliroOne\Api\Data\QliroOrderCustomerAddressInterface $value

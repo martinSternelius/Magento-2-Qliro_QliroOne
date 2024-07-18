@@ -1,0 +1,81 @@
+<?php
+
+use Qliro\QliroOne\ViewModel\RecurringHistory;
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+
+/**
+ * @var Template $block
+ * @var Escaper $escaper
+ * @var RecurringHistory $viewModel
+ */
+
+$viewModel = $block->getViewModel();
+$viewModel->setContainerBlock($block);
+$recurringInfos = $viewModel->getRecurringInfos();
+
+?>
+<?php if (count($recurringInfos)): ?>
+<table class="data table table-order-items history" id="my-orders-table">
+    <thead>
+        <tr>
+            <th scope="col" class="col id"><?= $escaper->escapeHtml(__('Order #')) ?></th>
+            <th scope="col" class="col date"><?= $escaper->escapeHtml(__('Subscription Started')) ?></th>
+            <th scope="col" class="col date"><?= $escaper->escapeHtml(__('Next Order Date')) ?></th>
+            <th scope="col" class="col date"><?= $escaper->escapeHtml(__('Subscription Canceled')) ?></th>
+            <th scope="col" class="col actions"><?= $escaper->escapeHtml(__('Action')) ?></th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php foreach ($recurringInfos as $recurringInfo): ?>
+            <?php
+                $isCanceled = $viewModel->isCanceled($recurringInfo);
+                $nextDateDisplay = ($isCanceled) ? __('N/A') : $viewModel->getFormattedDate($recurringInfo->getNextOrderDate());
+                $canceledDateDisplay = ($isCanceled) ? $viewModel->getFormattedDate($recurringInfo->getCanceledDate()) : __('N/A');
+            ?>
+            <tr>
+                <td data-th="<?= $escaper->escapeHtml(__('Order #')) ?>" class="col id">
+                    <a href="<?= $escaper->escapeHtmlAttr($viewModel->getViewOrderUrl($recurringInfo)) ?>">
+                        <?= $escaper->escapeHtml($recurringInfo->getIncrementId()) ?>
+                    </a>
+                </td>
+                <td data-th="<?= $escaper->escapeHtml(__('Subscription Started')) ?>" class="col date">
+                    <?= /* @noEscape */ $block->formatDate($recurringInfo->getCreatedAt(), \IntlDateFormatter::MEDIUM) ?>
+                </td>
+                <td data-th="<?= $escaper->escapeHtml(__('Next Order Date')) ?>" class="col date">
+                    <?= /* @noEscape */ $nextDateDisplay ?>
+                </td>
+                <td data-th="<?= $escaper->escapeHtml(__('Subscription Canceled')) ?>" class="col date">
+                    <?= /* @noEscape */ $canceledDateDisplay ?>
+                </td>
+                <td data-th="<?= $escaper->escapeHtml(__('Actions')) ?>" class="col actions">
+                    <?php if (!$viewModel->isCanceled($recurringInfo)) : ?>
+                        <?php $formAction = $viewModel->getCancelRecurringUrl(); ?>
+                        <form
+                            method="post"
+                            action="<?= $escaper->escapeHtmlAttr($formAction) ?>"
+                            data-mage-init='{
+                                "Qliro_QliroOne/js/cancel-subscription-handler":{
+                                    "buttonSelector": ".cancel-subscription"
+                                }
+                            }'
+                        >
+                            <?= /* @noEscape */ $block->getBlockHtml('formkey') ?>
+                            <input
+                                type="hidden"
+                                name="order_id"
+                                value="<?= $escaper->escapeHtmlAttr($recurringInfo->getOriginalOrderId()) ?>"
+                            />
+                            <button type="submit" class="cancel-subscription">
+                                <span><?= $escaper->escapeHtml(__('Cancel Subscription')) ?></span>
+                            </button>
+                        </form>
+                    <?php endif ?>
+                </td>
+            </tr>
+        <?php endforeach; ?>
+    </tbody>
+</table>
+<?php else: ?>
+    <caption class="table-caption"><?= $escaper->escapeHtml(__('You have no active subscriptions.')) ?></caption>
+<?php endif ?>

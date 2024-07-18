@@ -154,6 +154,14 @@ class DefaultHandler implements TypeHandlerInterface
      */
     public function prepareMetaData(TypeSourceItemInterface $item)
     {
-        return null;
+        if (!$item->getSubscription()) {
+            return null;
+        }
+
+        return [
+            'Subscription' => [
+                'Enabled' => true
+            ]
+        ];
     }
 }

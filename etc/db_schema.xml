@@ -1,0 +1,18 @@
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+    <table name="qliroone_recurring_info" resource="default" engine="innodb" comment="Qliro Recurring Payment Info">
+        <column xsi:type="int" name="entity_id" unsigned="true" nullable="false" identity="true" comment="Entity ID" />
+        <column xsi:type="int" name="original_order_id" unsigned="true" nullable="false" comment="Original Order ID" />
+        <column xsi:type="varchar" name="frequency_option" nullable="false" comment="Subscription Frequency" />
+        <column xsi:type="varchar" name="payment_method" nullable="false" comment="Payment Method" />
+        <column xsi:type="varchar" name="saved_credit_card_id" nullable="true" comment="Saved Credit Card ID" />
+        <column xsi:type="varchar" name="personal_number" nullable="true" comment="Personal Number" />
+        <column xsi:type="date" name="next_order_date" nullable="true" comment="Next Order Date" />
+        <column xsi:type="date" name="canceled_date" nullable="true" comment="Canceled Date" />
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="entity_id" />
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="QLIROONE_RECURRING_INFO_ORIGINAL_ORDER_ID_SALES_ORDER_ENTITY_ID" table="qliroone_recurring_info"
+            column="original_order_id" referenceTable="sales_order" referenceColumn="entity_id" onDelete="CASCADE" />
+    </table>
+</schema>

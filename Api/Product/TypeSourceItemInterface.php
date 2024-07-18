@@ -120,4 +120,15 @@ interface TypeSourceItemInterface
      * @return $this
      */
     public function setParent($value);
+
+    /**
+     * @param boolean $value
+     * @return $this
+     */
+    public function setSubscription(bool $value);
+
+    /**
+     * @return bool
+     */
+    public function getSubscription();
 }
