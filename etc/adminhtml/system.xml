@@ -277,6 +277,18 @@
                         </depends>
                     </field>
                 </group>
+                <group id="recurring_payments" type="text" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1" translate="label">
+                    <label>Recurring Payments Settings</label>
+                    <field id="enable" translate="label comment" type="select" showInDefault="1" showInWebsite="1" showInStore="1" sortOrder="1">
+                        <label>Enabled</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    </field>
+                    <field id="frequency_options" translate="label" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Frequency options</label>
+                        <frontend_model>Qliro\QliroOne\Block\Adminhtml\Form\Field\Recurring\FrequencyOptions</frontend_model>
+                        <backend_model>Qliro\QliroOne\Model\System\Config\Backend\Recurring\FrequencyOptions</backend_model>
+                    </field>
+                </group>
             </group>
         </section>
         <section id="tax">

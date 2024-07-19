@@ -24,6 +24,11 @@ class Customer implements QliroOrderCustomerInterface
     private $mobileNumber;
 
     /**
+     * @var string
+     */
+    private $personalNumber;
+
+    /**
      * @var \Qliro\QliroOne\Api\Data\QliroOrderCustomerAddressInterface
      */
     private $address;
@@ -86,6 +91,27 @@ class Customer implements QliroOrderCustomerInterface
     public function setMobileNumber($mobileNumber)
     {
         $this->mobileNumber = $mobileNumber;
+
+        return $this;
+    }
+
+    /**
+     * Getter.
+     *
+     * @return string
+     */
+    public function getPersonalNumber()
+    {
+        return $this->personalNumber;
+    }
+
+    /**
+     * @param string $personalNumber
+     * @return Customer
+     */
+    public function setPersonalNumber($personalNumber)
+    {
+        $this->personalNumber = $personalNumber;
 
         return $this;
     }

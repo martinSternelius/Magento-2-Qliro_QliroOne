@@ -6,10 +6,13 @@
 
 namespace Qliro\QliroOne\Api;
 
+use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Model\Order;
 use Qliro\QliroOne\Api\Data\CheckoutStatusInterface;
 use Qliro\QliroOne\Api\Data\MerchantNotificationInterface;
 use Qliro\QliroOne\Api\Data\MerchantNotificationResponseInterface;
+use Qliro\QliroOne\Api\Data\MerchantSavedCreditCardNotificationInterface;
+use Qliro\QliroOne\Api\Data\MerchantSavedCreditCardResponseInterface;
 use Qliro\QliroOne\Api\Data\QliroOrderInterface;
 use Qliro\QliroOne\Api\Data\UpdateShippingMethodsNotificationInterface;
 use Qliro\QliroOne\Api\Data\ValidateOrderNotificationInterface;
@@ -167,4 +170,14 @@ interface ManagementInterface
     public function merchantNotification(
         MerchantNotificationInterface $container
     ): MerchantNotificationResponseInterface;
+
+    /**
+     * Updates saved credit card
+     *
+     * @param \Qliro\QliroOne\Api\Data\MerchantSavedCreditCardNotificationInterface $merchantSavedCreditCardNotification
+     * @return \Qliro\QliroOne\Api\Data\MerchantSavedCreditCardResponseInterface
+     */
+    public function updateOrderSavedCreditCard(
+        MerchantSavedCreditCardNotificationInterface $merchantSavedCreditCardNotification
+    ): MerchantSavedCreditCardResponseInterface;
 }

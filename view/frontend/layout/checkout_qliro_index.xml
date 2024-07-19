@@ -97,11 +97,16 @@
                                         <item name="qliro-country-selector" xsi:type="array">
                                             <item name="component" xsi:type="string">Qliro_QliroOne/js/view/country-selector</item>
                                             <item name="displayArea" xsi:type="string">qlirooneCountrySelector</item>
-                                            <item name="sortOrder" xsi:type="string">9</item>
+                                            <item name="sortOrder" xsi:type="string">80</item>
+                                        </item>
+                                        <item name="qliro-recurring-order" xsi:type="array">
+                                            <item name="component" xsi:type="string">Qliro_QliroOne/js/view/recurring-order</item>
+                                            <item name="displayArea" xsi:type="string">qlirooneRecurringOrder</item>
+                                            <item name="sortOrder" xsi:type="string">90</item>
                                         </item>
                                         <item name="qliroone-step" xsi:type="array">
                                             <item name="component" xsi:type="string">Qliro_QliroOne/js/view/qliroone-view</item>
-                                            <item name="sortOrder" xsi:type="string">10</item>
+                                            <item name="sortOrder" xsi:type="string">100</item>
                                             <item name="displayArea" xsi:type="string">qlirooneCustomCheckout</item>
                                             <item name="children" xsi:type="array"></item>
                                         </item>

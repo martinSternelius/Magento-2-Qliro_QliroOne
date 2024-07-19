@@ -15,6 +15,7 @@
                 <item name="qliroOneUpdateOrder" xsi:type="object">Qliro\QliroOne\Console\UpdateOrderCommand</item>
                 <item name="qliroOneLock" xsi:type="object">Qliro\QliroOne\Console\LockCommand</item>
                 <item name="qliroOneUnlock" xsi:type="object">Qliro\QliroOne\Console\UnlockCommand</item>
+                <item name="qliroOneCreateMerchantPayment" xsi:type="object">Qliro\QliroOne\Console\CreateMerchantPaymentCommand</item>
             </argument>
         </arguments>
     </type>
@@ -203,6 +204,8 @@
     <preference for="Qliro\QliroOne\Api\Data\MerchantNotificationResponseInterface" type="Qliro\QliroOne\Model\Notification\MerchantNotificationResponse" />
     <preference for="Qliro\QliroOne\Api\Data\QliroOrderManagementStatusInterface" type="Qliro\QliroOne\Model\Notification\QliroOrderManagementStatus" />
     <preference for="Qliro\QliroOne\Api\Data\QliroOrderManagementStatusResponseInterface" type="Qliro\QliroOne\Model\Notification\QliroOrderManagementStatusResponse" />
+    <preference for="Qliro\QliroOne\Api\Data\MerchantSavedCreditCardNotificationInterface" type="Qliro\QliroOne\Model\Notification\MerchantSavedCreditCard" />
+    <preference for="Qliro\QliroOne\Api\Data\MerchantSavedCreditCardResponseInterface" type="Qliro\QliroOne\Model\Notification\MerchantSavedCreditCardResponse" />
 
     <preference for="Qliro\QliroOne\Api\Data\AdminOrderInterface" type="Qliro\QliroOne\Model\QliroOrder\Admin\AdminOrder" />
     <preference for="Qliro\QliroOne\Api\Data\AdminOrderItemActionInterface" type="Qliro\QliroOne\Model\QliroOrder\Admin\OrderItemAction" />
@@ -212,9 +215,15 @@
     <preference for="Qliro\QliroOne\Api\Data\AdminUpdateItemsRequestInterface" type="Qliro\QliroOne\Model\QliroOrder\Admin\UpdateItemsRequest" />
     <preference for="Qliro\QliroOne\Api\Data\AdminOrderPaymentTransactionInterface" type="Qliro\QliroOne\Model\QliroOrder\Admin\OrderPaymentTransaction" />
     <preference for="Qliro\QliroOne\Api\Data\AdminReturnWithItemsRequestInterface" type="Qliro\QliroOne\Model\QliroOrder\Admin\ReturnWithItemsRequest" />
+    <preference for="Qliro\QliroOne\Api\Data\AdminCreateMerchantPaymentRequestInterface" type="Qliro\QliroOne\Model\MerchantPayment\CreateRequest" />
     <preference for="Qliro\QliroOne\Api\Data\AdminTransactionResponseInterface" type="Qliro\QliroOne\Model\QliroOrder\Admin\TransactionResponse" />
+    <preference for="Qliro\QliroOne\Api\Data\AdminCreateMerchantPaymentResponseInterface" type="Qliro\QliroOne\Model\MerchantPayment\CreateResponse" />
+    <preference for="Qliro\QliroOne\Api\Data\MerchantPaymentPaymentMethodInterface" type="Qliro\QliroOne\Model\MerchantPayment\PaymentMethod" />
+    <preference for="Qliro\QliroOne\Api\Data\MerchantPaymentCustomerInterface" type="Qliro\QliroOne\Model\MerchantPayment\Customer" />
 
     <preference for="Qliro\QliroOne\Api\SubscriptionInterface" type="Qliro\QliroOne\Model\Newsletter\Subscription" />
+    <preference for="Qliro\QliroOne\Api\Data\RecurringInfoInterface" type="Qliro\QliroOne\Model\RecurringInfo" />
+    <preference for="Qliro\QliroOne\Api\RecurringInfoRepositoryInterface" type="Qliro\QliroOne\Model\RecurringInfoRepository" />
 
     <type name="Magento\Framework\App\Request\CsrfValidator">
         <plugin name="qliroone_onepage_csrf_validator_skip" type="Qliro\QliroOne\Plugin\Callbacks\CsrfValidatorSkip" />
@@ -227,6 +236,12 @@
     <type name="Qliro\QliroOne\Gateway\Config\Config">
         <arguments>
             <argument name="directoryHelper" xsi:type="object">Magento\Directory\Helper\Data\Proxy</argument>
+        </arguments>
+    </type>
+
+    <type name="Qliro\QliroOne\Model\Management\PlaceOrder">
+        <arguments>
+            <argument name="recurringDataService" xsi:type="object">Qliro\QliroOne\Service\RecurringPayments\Data\Proxy</argument>
         </arguments>
     </type>
 </config>
