@@ -19,6 +19,7 @@ use Qliro\QliroOne\Api\Data\RecurringInfoInterface;
 use Qliro\QliroOne\Model\Management\Quote as QliroManagement;
 use Magento\Checkout\Model\Session;
 
+
 /**
  * Service class for placing recurring orders
  */
