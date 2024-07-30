@@ -18,7 +18,8 @@ use Qliro\QliroOne\Model\Management\CreateMerchantPayment;
 use Qliro\QliroOne\Api\Data\RecurringInfoInterface;
 use Qliro\QliroOne\Model\Management\Quote as QliroManagement;
 use Magento\Checkout\Model\Session;
-
+use \Magento\Sales\Api\OrderRepositoryInterface;
+use Magento\Framework\Api\SearchCriteriaBuilder;
 
 /**
  * Service class for placing recurring orders
@@ -51,6 +52,10 @@ class PlaceOrders
 
     private Session $checkoutSession;
 
+    private OrderRepositoryInterface $orderRepository;
+
+    private SearchCriteriaBuilder $searchCriteriaBuilder;
+
     private array $results = [];
 
     private string $personalNumber;
@@ -67,6 +72,8 @@ class PlaceOrders
         DataService $dataService,
         QliroManagement $qliroManagement,
         Session $checkoutSession,
+        OrderRepositoryInterface $orderRepository,
+        SearchCriteriaBuilder $searchCriteriaBuilder,
         Manager $logger,
         CreateMerchantPayment $createMerchantPaymentManagement
     ) {
@@ -81,6 +88,8 @@ class PlaceOrders
         $this->dataService = $dataService;
         $this->qliroManagement = $qliroManagement;
         $this->checkoutSession = $checkoutSession;
+        $this->orderRepository = $orderRepository;
+        $this->searchCriteriaBuilder = $searchCriteriaBuilder;
         $this->logger = $logger;
         $this->createMerchantPaymentManagement = $createMerchantPaymentManagement;
     }
@@ -162,6 +171,12 @@ class PlaceOrders
         }
         $this->createMerchantPaymentManagement->execute();
 
+        $newOrder = $this->getOrderByQuoteId($quote->getId());
+        if($newOrder){
+            $newOrder->setRecurringParentId($order->getIncrementId());
+            $this->orderRepository->save($newOrder);
+        }
+
         $recurringInfo->setNextOrderDate($this->dataService->quoteGetter($quote)->getNextOrderDate());
         $this->results[$originalOrderId] = [
             'success' => 'true'
@@ -211,5 +226,21 @@ class PlaceOrders
         $shipInfo->setShippingCarrierCode($carrier);
         $shipInfo->setShippingMethodCode(strtolower($method));
         $this->shipInfoManagement->saveAddressInformation($quote->getId(), $shipInfo);
+    }
+
+    public function getOrderByQuoteId($quoteId)
+    {
+        $searchCriteria = $this->searchCriteriaBuilder
+            ->addFilter('quote_id', $quoteId, 'eq')
+            ->setPageSize(1)
+            ->create();
+
+        $orders = $this->orderRepository->getList($searchCriteria)->getItems();
+
+        if (!empty($orders)) {
+            return reset($orders);
+        }
+
+        return false;
     }
 }

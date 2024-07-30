@@ -15,4 +15,7 @@
         <constraint xsi:type="foreign" referenceId="QLIROONE_RECURRING_INFO_ORIGINAL_ORDER_ID_SALES_ORDER_ENTITY_ID" table="qliroone_recurring_info"
             column="original_order_id" referenceTable="sales_order" referenceColumn="entity_id" onDelete="CASCADE" />
     </table>
+    <table name="sales_order" resource="sales" comment="Sales Flat Order Grid">
+        <column xsi:type="varchar" name="recurring_parent_id" nullable="true"/>
+    </table>
 </schema>
