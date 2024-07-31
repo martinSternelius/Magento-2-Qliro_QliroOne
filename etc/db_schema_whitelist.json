@@ -14,5 +14,10 @@
             "PRIMARY": true,
             "QLIROONE_RECURRING_INFO_ORIGINAL_ORDER_ID_SALES_ORDER_ENTITY_ID": true
         }
+    },
+    "sales_order": {
+        "column": {
+            "recurring_parent_id": true
+        }
     }
 }
