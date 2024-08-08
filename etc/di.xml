@@ -53,6 +53,9 @@
                 <item name="virtual:configurable" xsi:type="object">Qliro\QliroOne\Model\Product\Type\Handler\ConfigurableHandler</item>
                 <item name="simple:configurable" xsi:type="object">Qliro\QliroOne\Model\Product\Type\Handler\ConfigurableHandler</item>
                 <item name="configurable" xsi:type="null" />
+                <item name="virtual:bundle" xsi:type="object">Qliro\QliroOne\Model\Product\Type\Handler\BundleHandler</item>
+                <item name="simple:bundle" xsi:type="object">Qliro\QliroOne\Model\Product\Type\Handler\BundleHandler</item>
+                <item name="bundle" xsi:type="object">Qliro\QliroOne\Model\Product\Type\Handler\BundleHandler</item>
             </argument>
         </arguments>
     </type>

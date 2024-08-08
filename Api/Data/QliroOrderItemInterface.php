@@ -28,6 +28,7 @@ interface QliroOrderItemInterface extends ContainerInterface
     const TYPE_DISCOUNT = 'Discount';
     const TYPE_FEE = 'Fee';
     const TYPE_SHIPPING = 'Shipping';
+    const TYPE_BUNDLE = 'Bundle';
 
     /**
      * @return string

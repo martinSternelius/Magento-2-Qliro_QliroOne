@@ -20,30 +20,17 @@ class AddFeeToOrder implements ObserverInterface
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
-        /** @var \Magento\Quote\Model\Quote $quote */
-        $quote = $observer->getQuote();
-
-        /** @var \Magento\Quote\Model\Quote\Address $address */
-        if ($quote->isVirtual()) {
-            $address = $quote->getBillingAddress();
-        } else {
-            $address = $quote->getShippingAddress();
-        }
-
-        $feeAmount = $address->getQlirooneFee();
-        $baseQlirooneFee = $address->getBaseQlirooneFee();
-        if (!$feeAmount || !$baseQlirooneFee) {
-            return $this;
-        }
-        $feeAmountTax = $address->getQlirooneFeeTax();
-        $baseQlirooneFeeTax = $address->getBaseQlirooneFeeTax();
 
         //Set fee data to order
         $order = $observer->getOrder();
-        $order->setQlirooneFee($feeAmount);
-        $order->setQlirooneFeeTax($feeAmountTax);
-        $order->setBaseQlirooneFee($baseQlirooneFee);
-        $order->setBaseQlirooneFeeTax($baseQlirooneFeeTax);
+        $qlirooneFees = $order->getPayment()->getAdditionalInformation('qliroone_fees');
+        if (is_array($qlirooneFees)) {
+            foreach ($qlirooneFees as $qlirooneFee) {
+                //update totals
+                $order->setGrandTotal($order->getGrandTotal() + $qlirooneFee["PricePerItemIncVat"]);
+            }
+        }
+
 
         return $this;
     }
