@@ -21,18 +21,16 @@ class Fee extends AbstractTotal
     {
         /** @var \Magento\Sales\Model\Order $order */
         $order = $invoice->getOrder();
-        if (!$order->getQlirooneFeeInvoiced()) {
-            $feeAmount = $order->getQlirooneFee();
-            $feeAmountTax = $order->getQlirooneFeeTax();
-            $basefeeAmount = $order->getBaseQlirooneFee();
-            $basefeeAmountTax = $order->getBaseQlirooneFeeTax();
-            $invoice->setQlirooneFee($feeAmount);
-            $invoice->setBaseQlirooneFee($basefeeAmount);
-
-            $invoice->setGrandTotal($invoice->getGrandTotal() + $feeAmount - $feeAmountTax);
-            $invoice->setBaseGrandTotal($invoice->getBaseGrandTotal() + $basefeeAmount - $basefeeAmountTax);
-            $order->setQlirooneFeeInvoiced($feeAmount);
-            $order->setBaseQlirooneFeeInvoiced($basefeeAmount);
+        $qlirooneFees = $order->getPayment()->getAdditionalInformation('qliroone_fees');
+        $qliroFeeTotal = 0;
+        if (is_array($qlirooneFees)) {
+            foreach ($qlirooneFees as $qlirooneFee) {
+                $qliroFeeTotal += $qlirooneFee["PricePerItemIncVat"];
+            }
+        }
+        if ($qliroFeeTotal > 0) {
+            $invoice->setGrandTotal($invoice->getGrandTotal() + $qliroFeeTotal);
+            $invoice->setBaseGrandTotal($invoice->getBaseGrandTotal() + $qliroFeeTotal);
         }
 
         return $this;

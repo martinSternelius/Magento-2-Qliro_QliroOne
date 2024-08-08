@@ -21,21 +21,16 @@ class Fee extends AbstractTotal
     {
         /** @var \Magento\Sales\Model\Order $order */
         $order = $creditmemo->getOrder();
-        if ($order->getQlirooneFeeInvoiced() > 0) {
-            $feeAmount = $order->getQlirooneFeeInvoiced() - $order->getQlirooneFeeRefunded();
-            if ($feeAmount > 0) {
-                $basefeeAmount = $order->getBaseQlirooneFeeInvoiced() - $order->getBaseQlirooneFeeRefunded();
-
-                $feeAmountTax = $order->getQlirooneFeeTax();
-                $basefeeAmountTax = $order->getBaseQlirooneFeeTax();
-                $creditmemo->setQlirooneFee($feeAmount);
-                $creditmemo->setBaseQlirooneFee($basefeeAmount);
-
-                $creditmemo->setGrandTotal($creditmemo->getGrandTotal() + $feeAmount - $feeAmountTax);
-                $creditmemo->setBaseGrandTotal($creditmemo->getBaseGrandTotal() + $basefeeAmount - $basefeeAmountTax);
-                $order->setQlirooneFeeRefunded($order->getQlirooneFeeRefunded() + $feeAmount);
-                $order->setBaseQlirooneFeeRefunded($order->getBaseQlirooneFeeRefunded() + $basefeeAmount);
+        $qlirooneFees = $order->getPayment()->getAdditionalInformation('qliroone_fees');
+        $qliroFeeTotal = 0;
+        if (is_array($qlirooneFees)) {
+            foreach ($qlirooneFees as $qlirooneFee) {
+                $qliroFeeTotal += $qlirooneFee["PricePerItemIncVat"];
             }
+        }
+        if ($qliroFeeTotal > 0) {
+            $creditmemo->setGrandTotal($creditmemo->getGrandTotal() + $qliroFeeTotal);
+            $creditmemo->setBaseGrandTotal($creditmemo->getBaseGrandTotal() + $qliroFeeTotal);
         }
 
         return $this;

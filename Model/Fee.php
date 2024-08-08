@@ -268,6 +268,24 @@ class Fee
     }
 
     /**
+     * Convert a fee array to a fee object
+     *
+     * @param array $qlirooneFee
+     * @return \Magento\Framework\DataObject
+     */
+    public function feeToFeeObject($qlirooneFee)
+    {
+        $feeObject = $this->dataObjectFactory->create();
+        $feeObject->setData([
+            'code' => $qlirooneFee['MerchantReference'],
+            'strong' => false,
+            'value' => $qlirooneFee['PricePerItemIncVat'],
+            'label' => $qlirooneFee['Description'],
+        ]);
+        return $feeObject;
+    }
+
+    /**
      * Will return fee setup, including an amount of zero
      *
      * @param int $storeId

@@ -492,7 +492,7 @@ class Quote extends AbstractManagement
     public function updateFee($fee)
     {
         try {
-            $this->fee->setQlirooneFeeInclTax($this->getQuote(), $fee);
+            //$this->fee->setQlirooneFeeInclTax($this->getQuote(), $fee);
             $this->recalculateAndSaveQuote();
         } catch (\Exception $exception) {
             $link = $this->getLinkFromQuote();

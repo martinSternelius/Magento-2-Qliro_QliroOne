@@ -7,11 +7,14 @@
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Sales:etc/pdf_file.xsd">
     <totals>
-        <total name="qliroone_fee">
+        <total name="qliroone_fees">
             <title translate="true">Payment Fee</title>
-            <source_field>fee</source_field>
+            <source_field>qliroone_fees</source_field>
+            <title_source_field>qliroone_fees_label</title_source_field>
+            <amount_prefix>+</amount_prefix>
+            <model>Qliro\QliroOne\Model\Order\Total\Pdf\Fee</model>
             <font_size>7</font_size>
-            <display_zero>false</display_zero>
+            <display_zero>true</display_zero>
             <sort_order>500</sort_order>
         </total>
     </totals>

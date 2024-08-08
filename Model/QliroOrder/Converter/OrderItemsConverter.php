@@ -11,6 +11,7 @@ use Magento\Quote\Model\Quote;
 use Qliro\QliroOne\Api\Data\QliroOrderItemInterface;
 use Qliro\QliroOne\Model\Product\Type\QuoteSourceProvider;
 use Qliro\QliroOne\Model\Product\Type\TypePoolHandler;
+use Qliro\QliroOne\Model\ContainerMapper;
 use Qliro\QliroOne\Model\Fee;
 use Qliro\QliroOne\Model\QliroOrder\Admin\Builder\Handler\InvoiceFeeHandler;
 use Qliro\QliroOne\Model\QliroOrder\Admin\Builder\Handler\ShippingFeeHandler;
@@ -36,20 +37,28 @@ class OrderItemsConverter
     private $quoteSourceProvider;
 
     /**
+     * @var \Qliro\QliroOne\Model\ContainerMapper
+     */
+    private $containerMapper;
+
+    /**
      * Inject dependencies
      *
      * @param \Qliro\QliroOne\Model\Product\Type\TypePoolHandler $typePoolHandler
      * @param \Qliro\QliroOne\Model\Fee $fee
      * @param \Qliro\QliroOne\Model\Product\Type\QuoteSourceProvider $quoteSourceProvider
+     * @param \Qliro\QliroOne\Model\ContainerMapper $containerMapper
      */
     public function __construct(
         TypePoolHandler $typePoolHandler,
         Fee $fee,
-        QuoteSourceProvider $quoteSourceProvider
+        QuoteSourceProvider $quoteSourceProvider,
+        ContainerMapper $containerMapper
     ) {
         $this->typePoolHandler = $typePoolHandler;
         $this->fee = $fee;
         $this->quoteSourceProvider = $quoteSourceProvider;
+        $this->containerMapper = $containerMapper;
     }
 
     /**
@@ -70,7 +79,7 @@ class OrderItemsConverter
         }
 
         $shippingMerchantRef = '';
-        foreach ($qliroOrderItems as $orderItem) {
+        foreach ($qliroOrderItems as $index => $orderItem) {
             switch ($orderItem->getType()) {
                 case QliroOrderItemInterface::TYPE_PRODUCT:
                     $this->typePoolHandler->resolveQuoteItem($orderItem, $this->quoteSourceProvider);
@@ -85,18 +94,10 @@ class OrderItemsConverter
                     break;
 
                 case QliroOrderItemInterface::TYPE_FEE:
-                    if ($this->fee->getMerchantReference() !== $orderItem->getMerchantReference()) {
-                        break;
-                    }
-
-                    $feeAmount += $orderItem->getPricePerItemIncVat();
+                    $qliroFee = $this->containerMapper->toArray($orderItem);
                     $quote->getPayment()->setAdditionalInformation(
-                        InvoiceFeeHandler::MERCHANT_REFERENCE_CODE_FIELD,
-                        $orderItem->getMerchantReference()
-                    );
-                    $quote->getPayment()->setAdditionalInformation(
-                        InvoiceFeeHandler::MERCHANT_REFERENCE_DESCRIPTION_FIELD,
-                        $orderItem->getDescription()
+                        "qliroone_fees",
+                        [$index => $qliroFee]
                     );
                     break;
             }
@@ -106,7 +107,7 @@ class OrderItemsConverter
             $this->applyShippingMethod($shippingCode, $quote, $shippingMerchantRef);
         }
 
-        $this->fee->setQlirooneFeeInclTax($quote, $feeAmount);
+        //$this->fee->setQlirooneFeeInclTax($quote, $feeAmount);
     }
 
     /**

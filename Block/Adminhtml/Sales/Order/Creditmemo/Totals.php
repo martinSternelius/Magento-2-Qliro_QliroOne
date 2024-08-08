@@ -46,12 +46,13 @@ class Totals extends Template
         /** @var \Magento\Sales\Model\Order\Creditmemo $creditMemo */
         $creditMemo = $parent->getCreditmemo();
 
-        if (!$creditMemo->getQlirooneFee()) {
-            return $this;
+        $qlirooneFees = $creditMemo->getOrder()->getPayment()->getAdditionalInformation('qliroone_fees');
+        if (is_array($qlirooneFees)) {
+            foreach ($qlirooneFees as $qlirooneFee) {
+                $fee = $this->fee->feeToFeeObject($qlirooneFee);
+                $parent->addTotalBefore($fee, 'sub_total');
+            }
         }
-
-        $fee = $this->fee->getFeeObject($creditMemo->getStoreId(), $creditMemo->getQlirooneFee());
-        $parent->addTotalBefore($fee, 'sub_total');
 
         return $this;
     }

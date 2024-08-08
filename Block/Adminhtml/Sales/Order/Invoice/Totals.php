@@ -46,12 +46,13 @@ class Totals extends Template
         /** @var \Magento\Sales\Model\Order\Invoice $invoice */
         $invoice = $parent->getInvoice();
 
-        if (!$invoice->getQlirooneFee()) {
-            return $this;
+        $qlirooneFees = $invoice->getOrder()->getPayment()->getAdditionalInformation('qliroone_fees');
+        if (is_array($qlirooneFees)) {
+            foreach ($qlirooneFees as $qlirooneFee) {
+                $fee = $this->fee->feeToFeeObject($qlirooneFee);
+                $parent->addTotalBefore($fee, 'sub_total');
+            }
         }
-
-        $fee = $this->fee->getFeeObject($invoice->getStoreId(), $invoice->getQlirooneFee());
-        $parent->addTotalBefore($fee, 'sub_total');
 
         return $this;
     }

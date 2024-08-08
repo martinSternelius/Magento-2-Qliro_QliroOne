@@ -57,26 +57,18 @@ class InvoiceFeeHandler implements OrderItemHandlerInterface
         if (!$order->getFirstCaptureFlag()) {
             return $orderItems;
         }
-        $merchantReference = $order->getPayment()->getAdditionalInformation(self::MERCHANT_REFERENCE_CODE_FIELD);
-        $description = $order->getPayment()->getAdditionalInformation(self::MERCHANT_REFERENCE_DESCRIPTION_FIELD);
-        $inclTax = (float)$order->getQlirooneFee();
-        $exclTax = $inclTax - (float)$order->getQlirooneFeeTax();
-
-        $formattedInclAmount = $this->qliroHelper->formatPrice($inclTax);
-        $formattedExclAmount = $this->qliroHelper->formatPrice($exclTax);
-
-        if ($inclTax > 0 && $merchantReference) {
-            /** @var \Qliro\QliroOne\Api\Data\QliroOrderItemInterface $qliroOrderItem */
-            $qliroOrderItem = $this->qliroOrderItemFactory->create();
-
-            $qliroOrderItem->setMerchantReference($merchantReference);
-            $qliroOrderItem->setDescription($description);
-            $qliroOrderItem->setType(QliroOrderItemInterface::TYPE_FEE);
-            $qliroOrderItem->setQuantity(1);
-            $qliroOrderItem->setPricePerItemIncVat($formattedInclAmount);
-            $qliroOrderItem->setPricePerItemExVat($formattedExclAmount);
-
-            $orderItems[] = $qliroOrderItem;
+        $qlirooneFees = $order->getPayment()->getAdditionalInformation('qliroone_fees');
+        if (is_array($qlirooneFees)) {
+            foreach ($qlirooneFees as $qlirooneFee) {
+                $qliroOrderItem = $this->qliroOrderItemFactory->create();
+                $qliroOrderItem->setMerchantReference($qlirooneFee['MerchantReference']);
+                $qliroOrderItem->setDescription($qlirooneFee['Description']);
+                $qliroOrderItem->setType($qlirooneFee['Type']);
+                $qliroOrderItem->setQuantity($qlirooneFee['Quantity']);
+                $qliroOrderItem->setPricePerItemIncVat($qlirooneFee['PricePerItemIncVat']);
+                $qliroOrderItem->setPricePerItemExVat($qlirooneFee['PricePerItemExVat']);
+                $orderItems[] = $qliroOrderItem;
+            }
         }
 
         return $orderItems;

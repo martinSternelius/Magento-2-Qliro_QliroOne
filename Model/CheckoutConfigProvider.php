@@ -125,14 +125,6 @@ class CheckoutConfigProvider implements ConfigProviderInterface
             ];
         }
 
-        $feeSetup = $this->fee->getFeeSetup($this->quote->getStoreId());
-        if (empty($feeSetup)) {
-            return $config;
-        }
-
-        $config['qliro']['qliroone_fee']['fee_setup'] =
-            $this->fee->applyDisplayFlagsToFeeArray($this->quote, $feeSetup);
-
         return $config;
     }
 
