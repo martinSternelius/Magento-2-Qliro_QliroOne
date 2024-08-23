@@ -9,6 +9,7 @@ use Qliro\QliroOne\Model\MerchantPayment\Builder\CreateRequestBuilder;
 use Qliro\QliroOne\Model\Logger\Manager;
 use Qliro\QliroOne\Model\Api\Client\OrderManagement;
 use Qliro\QliroOne\Service\General\LinkService;
+use Qliro\QliroOne\Model\Management\PlaceRecurringOrder;
 
 class CreateMerchantPayment extends AbstractManagement
 {
@@ -49,6 +50,13 @@ class CreateMerchantPayment extends AbstractManagement
      */
     private Manager $logManager;
 
+    /**
+     * @var \Qliro\QliroOne\Model\Management\PlaceRecurringOrder
+     */
+    private $placeOrder;
+
+    private $order;
+
     public function __construct(
         LinkService $linkService,
         CreateRequestBuilder $createRequestBuilder,
@@ -56,7 +64,8 @@ class CreateMerchantPayment extends AbstractManagement
         LinkRepositoryInterface $linkRepository,
         CartManagementInterface $quoteManagement,
         OrderManagement $qliroOrderManagement,
-        Manager $logManager
+        Manager $logManager,
+        PlaceRecurringOrder $placeOrder
     ) {
         $this->linkService = $linkService;
         $this->createRequestBuilder = $createRequestBuilder;
@@ -65,6 +74,7 @@ class CreateMerchantPayment extends AbstractManagement
         $this->logManager = $logManager;
         $this->quoteManagement = $quoteManagement;
         $this->qliroOrderManagement = $qliroOrderManagement;
+        $this->placeOrder = $placeOrder;
     }
 
     /**
@@ -75,6 +85,7 @@ class CreateMerchantPayment extends AbstractManagement
      */
     public function execute(): void
     {
+        $order = $this->getOrder();
         $quote = $this->getQuote();
         $quoteId = $quote->getEntityId();
 
@@ -82,7 +93,7 @@ class CreateMerchantPayment extends AbstractManagement
         $this->logManager->setMerchantReference($orderReference);
         $this->logManager->setMark('CREATE MERCHANT PAYMENT');
 
-        $request = $this->createRequestBuilder->setQuote($quote)->create();
+        $request = $this->createRequestBuilder->setQuote($quote)->setOrder($order)->create();
         $request->setMerchantReference($orderReference);
 
         $merchantPaymentResponse = null;
@@ -92,23 +103,59 @@ class CreateMerchantPayment extends AbstractManagement
                 $request,
                 (int)$quote->getStoreId()
             );
-            $newOrderId = $this->quoteManagement->placeOrder($quote->getId());
-
-            $link = $this->linkFactory->create();
-
-            // A real Quote Snapshot is not needed here but the value is required
-            $link->setQuoteSnapshot('merchantPayment');
+            $qliroOrderId = $merchantPaymentResponse->getOrderId();
+            $paymentTransactions = $merchantPaymentResponse->getPaymentTransactions();
+            $state = $paymentTransactions[0]->getStatus();
+            $qliroOrder = $this->qliroOrderManagement->getOrder($qliroOrderId);
             
+            $link = $this->linkFactory->create();
+            $link->setQuoteSnapshot('merchantPayment');// A real Quote Snapshot is not needed here but the value is required
             $link->setQuoteId($quoteId);
-            $link->setReference($orderReference);
-            $link->setQliroOrderId($merchantPaymentResponse->getOrderId());
-            $link->setOrderId($newOrderId);
+            $link->setReference($qliroOrder->getMerchantReference());
+            $link->setQliroOrderId($qliroOrderId);
             $link->setQliroOrderStatus(self::DEFAULT_QLIRO_STATUS);
             $link->setIsActive(1); // The convention is setting the link as Active if the order is placed without errors
+            $orderItems = $qliroOrder->getOrderItemActions();
+            foreach ($orderItems as $orderItem) {
+                if($orderItem->getType() == 'Shipping')
+                    $link->setUnifaunShippingAmount($orderItem->getPricePerItemIncVat());
+            }
             $this->linkRepository->save($link);
+
+
+            $this->placeOrder->setQuote($quote);
+            $magentoOrder = $this->placeOrder->execute($qliroOrder, $state);
         } catch (\Exception $exception) {
             $this->logManager->critical($exception->getMessage());
             return;
         }
+    }
+
+    /**
+     * Get the order from the management class
+     *
+     * @return \Magento\Sales\Model\Order
+     */
+    public function getOrder()
+    {
+        if (!($this->order instanceof \Magento\Sales\Model\Order)) {
+            throw new \LogicException('Order must be set before it is fetched.');
+        }
+
+        return $this->order;
+    }
+
+    /**
+     * Set the order in the management class
+     *
+     * @param \Magento\Sales\Model\Order $order
+     * @return $this
+     */
+    public function setOrder($order)
+    {
+        $order->setFirstCaptureFlag(true);
+        $this->order = $order;
+
+        return $this;
     }
 }

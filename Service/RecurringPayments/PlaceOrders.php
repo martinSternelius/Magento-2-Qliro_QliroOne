@@ -20,12 +20,15 @@ use Qliro\QliroOne\Model\Management\Quote as QliroManagement;
 use Magento\Checkout\Model\Session;
 use \Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Framework\Api\SearchCriteriaBuilder;
+use Magento\Quote\Model\Quote\Address\Rate;
 
 /**
  * Service class for placing recurring orders
  */
 class PlaceOrders
 {
+    const RECURRING_PAYMENT_INFO_KEY = 'qliro_recurring_info';
+
     private Create $orderCreate;
 
     private QuoteFactory $quoteFactory;
@@ -56,6 +59,8 @@ class PlaceOrders
 
     private SearchCriteriaBuilder $searchCriteriaBuilder;
 
+    private Rate $shippingRate;
+
     private array $results = [];
 
     private string $personalNumber;
@@ -74,6 +79,7 @@ class PlaceOrders
         Session $checkoutSession,
         OrderRepositoryInterface $orderRepository,
         SearchCriteriaBuilder $searchCriteriaBuilder,
+        Rate $shippingRate,
         Manager $logger,
         CreateMerchantPayment $createMerchantPaymentManagement
     ) {
@@ -90,6 +96,7 @@ class PlaceOrders
         $this->checkoutSession = $checkoutSession;
         $this->orderRepository = $orderRepository;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
+        $this->shippingRate = $shippingRate;
         $this->logger = $logger;
         $this->createMerchantPaymentManagement = $createMerchantPaymentManagement;
     }
@@ -141,31 +148,31 @@ class PlaceOrders
         }
 
         $originalOrderId = (int)$order->getEntityId();
-        // Populate quote payment with order payment data
-        $this->orderCreate->setQuote($this->quoteFactory->create());
+        
+        $this->orderCreate->setQuote($this->quoteFactory->create()->setStoreId($order->getStoreId()));
         $this->orderCreate->initFromOrder($order);
         $quote = $this->orderCreate->getQuote();
+
+        $payment = $order->getPayment();
+        $dataArray = $payment->getAdditionalInformation(self::RECURRING_PAYMENT_INFO_KEY);
+        $quote->getPayment()->setAdditionalInformation(self::RECURRING_PAYMENT_INFO_KEY, $dataArray);
+
         $quote->setStoreId($order->getStoreId());
         $quote->reserveOrderId();
-        $this->objectCopyService->copyFieldsetToTarget(
-            'sales_convert_order_payment',
-            'to_quote_payment',
-            $order->getPayment(),
-            $quote->getPayment()
-        );
-
-        // Update recurring info for new Quote
-        $this->dataService->scheduleNextRecurringOrder($quote);
-        $this->quoteRepo->save($quote);
-        $quote->setShippingDescription($order->getShippingDescription());
+        
         $this->checkoutSession->replaceQuote($quote);
-        $this->qliroManagement->setQuote($quote)->getLinkFromQuote();
-        if($order->getFee() > 0){
-            $this->qliroManagement->updateFee($order->getFee() + $order->getFeeTax());
-        }
-        $this->qliroManagement->updateShippingPrice($order->getShippingInclTax());
-        $this->saveQuoteShippingInfo($quote, $order);
-        $this->createMerchantPaymentManagement->setQuote($quote);
+        //set shipping method from order to quote
+        $this->shippingRate
+            ->setCode($order->getShippingMethod())
+            ->getPrice(1);
+        $shippingAddress = $quote->getShippingAddress();
+        $quote->getShippingAddress()->addShippingRate($this->shippingRate);
+        //save shipping method to quote
+        $this->quoteRepo->save($quote);
+        $shippingAddress->setCollectShippingRates(true)
+            ->collectShippingRates()
+            ->setShippingMethod($order->getShippingMethod());
+        $this->createMerchantPaymentManagement->setOrder($order)->setQuote($quote);
         if($recurringInfo->getPersonalNumber()){
             $quote->setCustomerPersonalNumber($recurringInfo->getPersonalNumber());
         }
@@ -177,10 +184,11 @@ class PlaceOrders
             $this->orderRepository->save($newOrder);
         }
 
-        $recurringInfo->setNextOrderDate($this->dataService->quoteGetter($quote)->getNextOrderDate());
-        $this->results[$originalOrderId] = [
-            'success' => 'true'
-        ];
+        // Update recurring info for parent Order
+        $quoteFromParrentOrder = $this->quoteRepo->get($order->getQuoteId());
+        $this->dataService->quoteGetter($quoteFromParrentOrder);
+        $this->dataService->scheduleNextRecurringOrder($quoteFromParrentOrder);
+        $recurringInfo->setNextOrderDate($this->dataService->quoteGetter($quoteFromParrentOrder)->getNextOrderDate());
     }
 
     /**
@@ -197,35 +205,6 @@ class PlaceOrders
             $this->logger->error($message);
         }
         $this->logger->error(sprintf('[RecurringPayment Error End. Original order: %s]', $orderId));
-    }
-
-    /**
-     * Transfer shipping info from order to new Quote
-     *
-     * @param Quote $quote
-     * @param string $methodCode
-     * @param string $carrier
-     * @return void
-     * @throws InputException
-     * @throws NoSuchEntityException
-     * @throws StateException
-     */
-    private function saveQuoteShippingInfo(Quote $quote, Order $order): void
-    {
-        if ($order->getIsVirtual()) {
-            return;
-        }
-
-        $shippingMethod = $order->getShippingMethod(true);
-        $carrier = $shippingMethod->getCarrierCode();
-        $method = $shippingMethod->getMethod();
-
-        $shipInfo = $this->shipInfoFactory->create();
-        $shipInfo->setBillingAddress($quote->getBillingAddress());
-        $shipInfo->setShippingAddress($quote->getShippingAddress());
-        $shipInfo->setShippingCarrierCode($carrier);
-        $shipInfo->setShippingMethodCode(strtolower($method));
-        $this->shipInfoManagement->saveAddressInformation($quote->getId(), $shipInfo);
     }
 
     public function getOrderByQuoteId($quoteId)

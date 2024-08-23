@@ -6,10 +6,12 @@
 
 namespace Qliro\QliroOne\Model\MerchantPayment\Builder;
 
+use Magento\Checkout\Block\Cart\Shipping;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Quote\Api\Data\CartInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Quote\Model\Quote;
+use \Magento\Sales\Model\Order;
 use Magento\Framework\Url\QueryParamsResolverInterface;
 use Qliro\QliroOne\Api\LanguageMapperInterface;
 use Qliro\QliroOne\Model\Config;
@@ -20,6 +22,8 @@ use Qliro\QliroOne\Model\MerchantPayment\Builder\CustomerBuilder;
 use Qliro\QliroOne\Model\QliroOrder\Builder\CustomerAddressBuilder;
 use Qliro\QliroOne\Model\QliroOrder\Builder\OrderItemsBuilder;
 use Qliro\QliroOne\Model\MerchantPayment\Builder\PaymentMethodBuilder;
+use Qliro\QliroOne\Model\QliroOrder\Admin\Builder\Handler\InvoiceFeeHandler;
+use Qliro\QliroOne\Model\QliroOrder\Admin\Builder\Handler\ShippingFeeHandler;
 
 /**
  * QliroOne Merchant Payment create request builder class
@@ -35,6 +39,11 @@ class CreateRequestBuilder
      * @var \Magento\Quote\Model\Quote|null
      */
     private ?Quote $quote = null;
+
+    /**
+     * @var \Magento\Sales\Model\Order
+     */
+    private ?Order $order = null;
 
     /**
      * @var \Qliro\QliroOne\Api\Data\AdminCreateMerchantPaymentRequestInterfaceFactory
@@ -87,6 +96,16 @@ class CreateRequestBuilder
     private QueryParamsResolverInterface $queryParamsResolver;
 
     /**
+     * @var \Qliro\QliroOne\Model\QliroOrder\Admin\Builder\Handler\ShippingFeeHandler
+     */
+    private $shippingFeeHandler;
+
+    /**
+     * @var \Qliro\QliroOne\Model\QliroOrder\Admin\Builder\Handler\InvoiceFeeHandler
+     */
+    private $invoiceFeeHandler;
+
+    /**
      * @var \Magento\Framework\Event\ManagerInterface
      */
     private ManagerInterface $eventManager;
@@ -102,6 +121,8 @@ class CreateRequestBuilder
         StoreManagerInterface $storeManager,
         CallbackToken $callbackToken,
         QueryParamsResolverInterface $queryParamsResolver,
+        ShippingFeeHandler $shippingFeeHandler,
+        InvoiceFeeHandler $invoiceFeeHandler,
         ManagerInterface $eventManager
     ) {
         $this->createRequestFactory = $createRequestFactory;
@@ -114,6 +135,8 @@ class CreateRequestBuilder
         $this->storeManager = $storeManager;
         $this->callbackToken = $callbackToken;
         $this->queryParamsResolver = $queryParamsResolver;
+        $this->shippingFeeHandler = $shippingFeeHandler;
+        $this->invoiceFeeHandler = $invoiceFeeHandler;
         $this->eventManager = $eventManager;
     }
 
@@ -126,6 +149,19 @@ class CreateRequestBuilder
     public function setQuote(CartInterface $quote)
     {
         $this->quote = $quote;
+
+        return $this;
+    }
+
+    /**
+     * Set order for data extraction
+     *
+     * @param \Magento\Sales\Model\Order $order
+     * @return $this
+     */
+    public function setOrder(Order $order)
+    {
+        $this->order = $order;
 
         return $this;
     }
@@ -146,6 +182,7 @@ class CreateRequestBuilder
         $createRequest->setMerchantApiKey($this->qliroConfig->getMerchantApiKey($this->quote->getStoreId()));
 
         $orderItems = $this->orderItemsBuilder->setQuote($this->quote)->create();
+        $orderItems = $this->shippingFeeHandler->handle($orderItems, $this->order);
 
         $createRequest->setOrderItems($orderItems);
 

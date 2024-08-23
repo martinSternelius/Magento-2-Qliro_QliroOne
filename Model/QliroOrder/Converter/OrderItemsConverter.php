@@ -138,8 +138,10 @@ class OrderItemsConverter
         if ($extensionAttributes !== null) {
             $shippingAssignments = $quote->getExtensionAttributes()->getShippingAssignments();
 
-            foreach ($shippingAssignments as $assignment) {
-                $assignment->getShipping()->setMethod($code);
+            if(is_array($shippingAssignments)) {
+                foreach ($shippingAssignments as $assignment) {
+                    $assignment->getShipping()->setMethod($code);
+                }
             }
         }
 
