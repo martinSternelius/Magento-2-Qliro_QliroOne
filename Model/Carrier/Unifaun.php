@@ -5,11 +5,11 @@
  */
 namespace Qliro\QliroOne\Model\Carrier;
 
-use Magento\Checkout\Model\Session;
 use Magento\Quote\Model\Quote\Address\RateRequest;
 use Magento\Shipping\Model\Rate\Result;
 use Qliro\QliroOne\Api\LinkRepositoryInterface;
 use Qliro\QliroOne\Model\Config;
+use Magento\Quote\Api\CartRepositoryInterface;
 
 class Unifaun extends \Magento\Shipping\Model\Carrier\AbstractCarrier implements
     \Magento\Shipping\Model\Carrier\CarrierInterface
@@ -32,10 +32,6 @@ class Unifaun extends \Magento\Shipping\Model\Carrier\AbstractCarrier implements
      */
     protected $_rateMethodFactory;
     /**
-     * @var Session
-     */
-    private $checkoutSession;
-    /**
      * @var LinkRepositoryInterface
      */
     private $linkRepository;
@@ -43,6 +39,17 @@ class Unifaun extends \Magento\Shipping\Model\Carrier\AbstractCarrier implements
      * @var Config
      */
     private $qliroConfig;
+    /**
+     * @var CartRepositoryInterface
+     */
+    private $quoteRepository;
+
+    /**
+     * @var
+     */
+    private $quoteId;
+
+
 
     /**
      * Shipping constructor.
@@ -52,9 +59,9 @@ class Unifaun extends \Magento\Shipping\Model\Carrier\AbstractCarrier implements
      * @param \Psr\Log\LoggerInterface $logger
      * @param \Magento\Shipping\Model\Rate\ResultFactory $rateResultFactory
      * @param \Magento\Quote\Model\Quote\Address\RateResult\MethodFactory $rateMethodFactory
-     * @param Session $checkoutSession
      * @param LinkRepositoryInterface $linkRepository
-     * @param Config $qliroConfig
+     * @param Cart $name
+     * @param CartRepositoryInterface $quoteRepository
      * @param array $data
      */
     public function __construct(
@@ -63,16 +70,16 @@ class Unifaun extends \Magento\Shipping\Model\Carrier\AbstractCarrier implements
         \Psr\Log\LoggerInterface $logger,
         \Magento\Shipping\Model\Rate\ResultFactory $rateResultFactory,
         \Magento\Quote\Model\Quote\Address\RateResult\MethodFactory $rateMethodFactory,
-        Session $checkoutSession,
         LinkRepositoryInterface $linkRepository,
+        CartRepositoryInterface $quoteRepository,
         Config $qliroConfig,
         array $data = []
     ) {
         $this->_rateResultFactory = $rateResultFactory;
         $this->_rateMethodFactory = $rateMethodFactory;
         parent::__construct($scopeConfig, $rateErrorFactory, $logger, $data);
-        $this->checkoutSession = $checkoutSession;
         $this->linkRepository = $linkRepository;
+        $this->quoteRepository = $quoteRepository;
         $this->qliroConfig = $qliroConfig;
     }
 
@@ -90,9 +97,9 @@ class Unifaun extends \Magento\Shipping\Model\Carrier\AbstractCarrier implements
      */
     private function getShippingPrice()
     {
-        $quote = $this->getQuote();
+        $quoteId = $this->quoteId;
         try {
-            $link = $this->linkRepository->getByQuoteId($quote->getId());
+            $link = $this->linkRepository->getByQuoteId($quoteId);
             if ($link->getUnifaunShippingAmount()) {
                 $shippingPrice = $link->getUnifaunShippingAmount();
             } else {
@@ -129,29 +136,23 @@ class Unifaun extends \Magento\Shipping\Model\Carrier\AbstractCarrier implements
 
         $method->setMethod($this->_code);
         $method->setMethodTitle($this->getConfigData('name'));
+        if(count($request->getAllItems())){
+            $this->quoteId = $request->getAllItems()[0]->getQuoteId();
+            $quote = $this->quoteRepository->get($this->quoteId);
+            if($quote->getShippingAddress()->getShippingDescription() && strpos($quote->getShippingAddress()->getShippingDescription(), 'Unifaun -') !== false) {
+                $shipingMethod = explode(' - ', $quote->getShippingAddress()->getShippingDescription());
+                $method->setCarrierTitle($shipingMethod[0]);
+                $method->setMethodTitle($shipingMethod[1]);
+            }
+        }
 
         $amount = $this->getShippingPrice();
 
         $method->setPrice($amount);
         $method->setCost($amount);
-        if($this->getQuote()->getShippingDescription() && strpos($this->getQuote()->getShippingDescription(), 'Unifaun -') !== false) {
-            $shipingMethod = explode(' - ', $this->getQuote()->getShippingDescription());
-            $method->setCarrierTitle($shipingMethod[0]);
-            $method->setMethodTitle($shipingMethod[1]);
-        }
 
         $result->append($method);
 
         return $result;
-    }
-
-    /**
-     * Get current quote from checkout session
-     *
-     * @return \Magento\Quote\Model\Quote
-     */
-    private function getQuote()
-    {
-        return $this->checkoutSession->getQuote();
     }
 }
