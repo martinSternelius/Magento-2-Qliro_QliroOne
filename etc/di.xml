@@ -96,10 +96,12 @@
 
     <virtualType name="QliroLogger" type="Magento\Framework\Logger\Monolog">
         <arguments>
-            <argument name="name" xsi:type="string">database_logger</argument>
+            <argument name="name" xsi:type="string">qliroone_logger</argument>
 
             <argument name="handlers" xsi:type="array">
-                <item name="qliroone_handler" xsi:type="object">Qliro\QliroOne\Model\Logger\Handler</item>
+                <item name="qliroone_db_handler" xsi:type="object">Qliro\QliroOne\Model\Logger\Handler</item>
+                <item name="qliroone_file_handler" xsi:type="object">Qliro\QliroOne\Model\Logger\Handler\File</item>
+                <item name="qliroone_error_file_handler" xsi:type="object">Qliro\QliroOne\Model\Logger\Handler\ErrorFile</item>
             </argument>
 
             <argument name="processors" xsi:type="array">

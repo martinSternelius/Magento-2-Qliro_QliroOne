@@ -4,5 +4,8 @@
         <route id="recurringorders" frontName="recurringorders">
             <module name="Qliro_QliroOne" />
         </route>
+        <route id="qliroone" frontName="qliroone">
+            <module name="Qliro_QliroOne" before="Magento_Backend" />
+        </route>
     </router>
 </config>
