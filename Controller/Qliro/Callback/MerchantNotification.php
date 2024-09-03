@@ -122,7 +122,7 @@ class MerchantNotification implements HttpPostActionInterface
 
         $response = $this->dataHelper->sendPreparedPayload(
             $responseContainer,
-            $responseContainer->getCallbackResponse(),
+            $responseContainer->getCallbackResponseCode(),
             null,
             'CALLBACK:MERCHANT_NOTIFICATION'
         );
