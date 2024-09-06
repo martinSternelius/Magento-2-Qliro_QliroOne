@@ -18,6 +18,11 @@ class ErrorFile extends BaseHandler
      */
     private Config $config;
 
+    /**
+     * @var int
+     */
+    protected $loggerType = Logger::ERROR;
+
     public function __construct(
         Config $config,
         File $filesystemDriver,
