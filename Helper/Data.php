@@ -92,11 +92,14 @@ class Data extends AbstractHelper
         ];
 
         try {
-            $payload = $this->json->unserialize($content);
+            $payload = (!!$content) ? $this->json->unserialize($content) : [];
             if (!empty($payload['MerchantReference'])) {
                 $this->logManager->setMerchantReference($payload['MerchantReference']);
             }
-            $data['body'] = $payload;
+
+            if ($payload) {
+                $data['body'] = $payload;
+            }
         } catch (\InvalidArgumentException $exception) {
             $data['raw_body'] = $content;
             $data['exception'] = $exception->getMessage();

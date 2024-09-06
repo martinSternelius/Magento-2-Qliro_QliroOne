@@ -23,7 +23,7 @@ use Qliro\QliroOne\Model\Logger\ConnectionProvider;
 class Handler extends AbstractProcessingHandler
 {
     /**
-     * @var \Magento\Payment\Model\Method\Adapter
+     * @var \Qliro\QliroOne\Model\Config
      */
     private $config;
 
@@ -98,6 +98,7 @@ class Handler extends AbstractProcessingHandler
                 LogRecordInterface::FIELD_TAGS => $context['tags'] ?? '',
                 LogRecordInterface::FIELD_PROCESS_ID => $context['process_id'] ?? '',
                 LogRecordInterface::FIELD_EXTRA => $this->encodeExtra($context['extra'] ?? ''),
+                LogRecordInterface::FIELD_DATE => date('Y-m-d H:i:s')
             ]
         );
     }
