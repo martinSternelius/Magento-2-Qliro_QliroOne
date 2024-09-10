@@ -176,10 +176,13 @@ class CheckoutStatus extends AbstractManagement
 
                     $response = $this->checkoutStatusRespond(CheckoutStatusResponseInterface::RESPONSE_ORDER_NOT_FOUND);
                 }
-            } else {
+            } elseif (in_array(
+                $checkoutStatus->getStatus(),
+                [CheckoutStatusInterfaceAlias::STATUS_ONHOLD, CheckoutStatusInterfaceAlias::STATUS_REFUSED]
+            )) {
                 /*
                  * Second major scenario:
-                 * The order already exists; just update the order with the new QliroOne order status
+                 * The order already exists; if the status is OnHold or Refused, Order status should be updated
                  */
                 if ($this->placeOrder->applyQliroOrderStatus($this->orderRepository->get($orderId))) {
                     $response = $this->checkoutStatusRespond(CheckoutStatusResponseInterface::RESPONSE_RECEIVED);
