@@ -20,11 +20,12 @@ class Fee extends DefaultTotal
     {
         $qlirooneFees = $this->getOrder()->getPayment()->getAdditionalInformation('qliroone_fees');
         $fontSize = $this->getFontSize() ? $this->getFontSize() : 7;
+        $total = null;
         if (is_array($qlirooneFees)) {
             foreach ($qlirooneFees as $qlirooneFee) {
                 $amount = $this->getOrder()->formatPriceTxt($qlirooneFee["PricePerItemIncVat"]);
                 $title = __($this->getTitle());
-                $label = $title . ' (' . $qlirooneFee["Description"] . ')'; 
+                $label = $title . ' (' . $qlirooneFee["Description"] . ')';
                 $total[] = ['amount' => $amount, 'label' => $label, 'font_size' => $fontSize];
             }
         }
