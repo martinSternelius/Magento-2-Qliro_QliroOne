@@ -101,14 +101,23 @@ class MerchantNotification extends AbstractManagement
             return;
         }
 
-        try {
-            $order = $this->orderRepo->get($link->getOrderId());
-        } catch (NoSuchEntityException $e) {
+        if (null === $link->getOrderId()) {
             $this->logManager->notice(
-                'MerchantPush received too early, responding with order not found',
+                'MerchantNotification received too early, responding with order not found',
                 $this->logContext
             );
-            $this->createResponse('Magento Order not found', 404);
+            $this->createResponse('Magento Order not created yet, try again later', 404);
+            return;
+        }
+
+        try {
+            $order = $this->orderRepo->get($link->getOrderId());
+        } catch (\Exception $e) {
+            $this->logManager->critical(
+                sprintf('Magento Order with id: [%s] not found for MerchantNotification', $link->getOrderId()),
+                $this->logContext
+            );
+            $this->createResponse('Magento Order not found', 500);
             return;
         }
 
