@@ -116,7 +116,7 @@ class Data extends AbstractHelper
 
         $this->logManager->setMark(null);
 
-        return $payload;
+        return $payload ?? [];
     }
 
     /**
