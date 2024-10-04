@@ -17,12 +17,6 @@ class AddRecurringColumnToOrderGrid
             []
         );
 
-        $collection->getSelect()->joinLeft(
-            ['so' => $collection->getTable('sales_order')],
-            'main_table.entity_id = so.entity_id',
-            ['recurring_parent_id' => 'so.recurring_parent_id']
-        );
-
         // Add the is_recurring expression as a part of the field list
         $select->columns([
             'is_recurring' => new Zend_Db_Expr('IF(recurring_info.original_order_id IS NOT NULL AND recurring_info.next_order_date IS NOT NULL, "Yes", "No")')
