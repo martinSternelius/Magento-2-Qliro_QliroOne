@@ -101,7 +101,7 @@ class MerchantNotification extends AbstractManagement
             return;
         }
 
-        if (null === $link->getOrderId()) {
+        if (!$link->getOrderId()) {
             $this->logManager->notice(
                 'MerchantNotification received too early, responding with order not found',
                 $this->logContext
@@ -124,6 +124,12 @@ class MerchantNotification extends AbstractManagement
         $payment = $order->getPayment();
         $additionalInfo = $payment->getAdditionalInformation();
         $shippingInfo = $additionalInfo['qliroone_shipping_info'] ?? [];
+
+        if (isset($shippingInfo['payload']) && $shippingInfo['payload'] == $container->getPayload()) {
+            $this->createResponse('Shipping Provider Update already handled', 200);
+            return;
+        }
+
         $shippingInfo['provider'] = $container->getProvider();
         $shippingInfo['payload'] = $container->getPayload();
         $additionalInfo['qliroone_shipping_info'] = $shippingInfo;
