@@ -189,6 +189,12 @@ class CheckoutStatus extends AbstractManagement
                 } else {
                     $response = $this->checkoutStatusRespond(CheckoutStatusResponseInterface::RESPONSE_ORDER_NOT_FOUND);
                 }
+            } elseif ($checkoutStatus->getStatus() === CheckoutStatusInterfaceAlias::STATUS_COMPLETED) {
+                /**
+                 * Third major scenario: Order exists and is completed
+                 *   = everyhing's good and nothing else to do!
+                 */
+                $response = $this->checkoutStatusRespond(CheckoutStatusResponseInterface::RESPONSE_RECEIVED);
             }
             $this->lock->unlock($qliroOrderId);
 
@@ -207,6 +213,11 @@ class CheckoutStatus extends AbstractManagement
             $this->logManager->critical($exception, $logContext);
             $response = $this->checkoutStatusRespond(CheckoutStatusResponseInterface::RESPONSE_ORDER_NOT_FOUND);
 
+        }
+
+        // Unknown scenario, no response created. Should not happen, respond with Order Not Found
+        if (!isset($response)) {
+            $response = $this->checkoutStatusRespond(CheckoutStatusResponseInterface::RESPONSE_ORDER_NOT_FOUND);
         }
 
         return $response;
